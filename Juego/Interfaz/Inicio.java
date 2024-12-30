@@ -6,7 +6,6 @@ public class Inicio extends JFrame{
     
     private JButton btnEspada,btnArma;
     private JPanel panel;
-    private int seleccion = 0;
 
     public Inicio(){
         panel = new JPanel();
@@ -16,6 +15,7 @@ public class Inicio extends JFrame{
         add(panel);
         setSize( 500,200);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
+        setLocationRelativeTo(null);
         setVisible(true);
     }
 

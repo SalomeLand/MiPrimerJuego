@@ -13,8 +13,8 @@ public class Bala {
         this.y = y;
     }
 
-    public void movimiento(){
-        x += 15;
+    public void movimiento(int movimiento1){
+        x += movimiento1;
     }
 
     public int getLadoDisparo() {

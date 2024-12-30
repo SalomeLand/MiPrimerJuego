@@ -23,6 +23,7 @@ public class Jugador extends Personaje {
             }else if(ladoEspada == 2) paintEspada(g);
         }
     }
+
     
     public void setInmunidad(boolean inmunidad) {
         this.inmunidad = inmunidad;
@@ -49,7 +50,15 @@ public class Jugador extends Personaje {
     public int getLadoEspada(){
         return ladoEspada;
     }
+    public void paintBarraVida(Graphics g){
+        g.setColor(new Color(0,0,0,150));
+        g.fillRect(x + 5, y - 20, 30, 8);
+        g.setColor(new Color(255,0,0,200));
+        g.fillRect(x + 8, y - 18, (int)(salud/8),4);
+        
+    }
 
+    //Dibujar espada a la derecha
     public void paintEspada(Graphics g) {
         int t = 1;
         int x3 = x + width;
@@ -83,6 +92,7 @@ public class Jugador extends Personaje {
         g.fillRect((x3 + 22) * t, (y2 + 7) * t, 2 * t, 1 * t);
         g.fillRect((x3 + 24) * t, (y2 + 6) * t, 1 * t, 1 * t);
     }
+    //Dibujar la espada a la izquierda
     public void paintEspada2(Graphics g) {
         int t = 1;
         int x3 = x - 24;

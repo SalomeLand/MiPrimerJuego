@@ -8,8 +8,8 @@ public class Metralleta extends Arma {
     private boolean disparo;
     private ArrayList<Bala> balas = new ArrayList<>();
 
-    public Metralleta(int velocidada,int daño, int width, int height,int x, int y){
-        super(velocidada, daño,width,height,x,y);
+    public Metralleta(int velocidad,int daño, int width, int height,int x, int y){
+        super(velocidad, daño,width,height,x,y);
     }
 
     public boolean getDisparo(){

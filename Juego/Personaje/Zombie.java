@@ -8,15 +8,23 @@ public class Zombie extends Personaje {
     protected int daño;
     
     public Zombie(int x, int y, int salud,int daño) {
-        super(x, y, 25, 36, salud);
+        super(x, y, 21, 36, salud);
         this.daño = daño;
     }
 
     public void follow(Jugador player) {
-        if (x > player.x +(player.width/2)) x -= 1;
-        if (x < player.x +(player.width/2)) x += 1;
-        if (y > player.y) y -= 1;
-        if (y < player.y) y += 1;
+        if (x > player.x + player.width - 5) x -= 1;
+        if ((x + width) < player.x + 15) x += 1;
+        if (y > player.y + player.height - 5) y -= 1;
+        if ((y + height) < player.y + 15) y += 1;
+    }
+
+    public void paintBarraVida(Graphics g){
+        g.setColor(new Color(0,0,0,150));
+        g.fillRect(x + 5, y - 20, 20, 8);
+        g.setColor(new Color(255,0,0,200));
+        g.fillRect(x + 8, y - 18, (int)(salud/14),4);
+        
     }
     
     public int getDaño() {
