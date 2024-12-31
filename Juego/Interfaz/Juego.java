@@ -9,6 +9,7 @@ import java.util.Iterator;
 import javax.swing.*;
 
 import Juego.Armas.Bala;
+import Juego.Armas.Espada;
 import Juego.Armas.Metralleta;
 import Juego.Personaje.Jugador;
 import Juego.Personaje.Zombie;
@@ -19,13 +20,14 @@ public class Juego extends JPanel implements ActionListener, KeyListener {
     private ArrayList<Zombie> zombies;
     private ArrayList<Bala> balas;
     private Metralleta metralleta;
+    private Espada espada;
     private Timer timer;
     private Timer timer2;
     private int cantidadZombie = 2;
-    private int seleccion, tiempoDisparo;
+    private int seleccion;
     private Timer timeEspada,timeArma;
     private JFrame frame;
-    long lastMoveTime = 0; 
+    long lastMoveTime = 0;
     
 
 
@@ -38,13 +40,14 @@ public class Juego extends JPanel implements ActionListener, KeyListener {
         zombies = new ArrayList<>();
         balas = new ArrayList<>();
         metralleta = new Metralleta(20, 100, 37, 14, player.getX() + 25, player.getY() + player.getHeight()/4);
+        espada = new Espada(20, 50, 25, 15, 20, player.getY() + player.getHeight()/4);
 
         timeEspada = new Timer(16, new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 for (Zombie zombie : zombies) {
                     // Verificar si la espada del jugador golpea al zombie
-                    Rectangle swordBounds = player.getSwordBounds();
+                    Rectangle swordBounds = espada.getSwordBounds();
                     if (Math.abs(zombie.getX() - player.getX()) < 200 && Math.abs(zombie.getY() - player.getY()) < 200) {
                         if (swordBounds != null && swordBounds.intersects(zombie.getBounds())) {
                             zombies.remove(zombie);
@@ -52,6 +55,7 @@ public class Juego extends JPanel implements ActionListener, KeyListener {
                         }
                     }
                 }
+                espada.follow(player);
                 repaint();
             }
         });
@@ -162,16 +166,16 @@ public class Juego extends JPanel implements ActionListener, KeyListener {
             public void mousePressed(MouseEvent e) {
                 int x = e.getX();
                 if (x > player.getX() + player.getWidth()/2) {
-                    player.setLadoEspada(2);
-                }else player.setLadoEspada(1);
-                player.setSwordSwinging(true);
+                    espada.setLado(2);
+                }else espada.setLado(1);
+                espada.setSwordSwinging(true);
                 
             }
         });
         this.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseReleased(MouseEvent e) {
-                player.setSwordSwinging(false);
+                espada.setSwordSwinging(false);
             }
         });
     }
@@ -183,11 +187,11 @@ public class Juego extends JPanel implements ActionListener, KeyListener {
                 int x = e.getX();    
                 if (x > player.getX() + player.getWidth()/2) {
                     Bala bala = new Bala(player.getX() + 15, player.getY() + player.getHeight()/2 + 4,1);
-                    metralleta.setLadoDisparo(1);
+                    metralleta.setLado(2);
                     balas.add(bala);
                 }else {
                     Bala bala = new Bala(player.getX() + 15, player.getY() + player.getHeight()/ 2 + 4,2);
-                    metralleta.setLadoDisparo(2);
+                    metralleta.setLado(1);
                     balas.add(bala);
                 }
                 metralleta.setDisparo(true);
@@ -207,11 +211,11 @@ public class Juego extends JPanel implements ActionListener, KeyListener {
                 public void actionPerformed(ActionEvent e) {
                     if(x > player.getX() + player.getWidth()/2){
                         Bala bala = new Bala(player.getX() + 15, player.getY() + player.getHeight()/2 + 4,1 );
-                        metralleta.setLadoDisparo(1);
+                        metralleta.setLado(2);
                         balas.add(bala);
                     }else{
                         Bala bala = new Bala(player.getX() + 15, player.getY() + player.getHeight()/2 + 4,2 );
-                        metralleta.setLadoDisparo(2);
+                        metralleta.setLado(1);
                         balas.add(bala);
                     }
                 }
@@ -231,14 +235,18 @@ public class Juego extends JPanel implements ActionListener, KeyListener {
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
         player.paintBarraVida(g);
-        player.attack(g);
-        player.paintJugador(g);
-
+        
         if(seleccion == 2){
             for(Bala bala : balas){
                 bala.paintBala(g);
             }
+            player.setLado(metralleta.getLado());
+            player.follow(g);
             metralleta.disparo(g);
+        }else if(seleccion == 1){
+            player.setLado(espada.getLado());
+            player.follow(g);
+            espada.atacar(g);
         }
         // Dibujar zombies
         for (Zombie zombie : zombies) {
@@ -265,9 +273,9 @@ public class Juego extends JPanel implements ActionListener, KeyListener {
         return new Zombie(player.getX() - 100,player.getY() -175,200,20);
     }
 
-   /*
-   @Override
-   public void keyPresse2d(KeyEvent e) {
+    /*
+    @Override
+    public void keyPresse2d(KeyEvent e) {
         int key = e.getKeyCode();
         if (key == KeyEvent.VK_W) player.move(0, -15);
         if (key == KeyEvent.VK_S) player.move(0, 15);
@@ -289,8 +297,10 @@ public class Juego extends JPanel implements ActionListener, KeyListener {
                 player.move(0, 15);
             }  if (e.getKeyCode() == KeyEvent.VK_A) {
                 player.move(-15, 0);// Mueve hacia arriba0
+                metralleta.setLado(1);
             }  if (e.getKeyCode() == KeyEvent.VK_D) {
-               player.move(15, 0); // Mueve hacia abajo
+                metralleta.setLado(2);
+                player.move(15, 0); // Mueve hacia abajo
             }
             // Actualiza el tiempo de la última vez que se movió
             lastMoveTime = currentTime;

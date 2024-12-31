@@ -20,9 +20,9 @@ public class Zombie extends Personaje {
     }
 
     public void paintBarraVida(Graphics g){
-        g.setColor(new Color(0,0,0,150));
+        g.setColor(new Color(0,0,0));
         g.fillRect(x + 5, y - 20, 20, 8);
-        g.setColor(new Color(255,0,0,200));
+        g.setColor(new Color(255,0,0));
         g.fillRect(x + 8, y - 18, (int)(salud/14),4);
         
     }

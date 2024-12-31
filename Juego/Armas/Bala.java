@@ -25,7 +25,7 @@ public class Bala {
         if(ladoDisparo == 1) movimientoDerecha(movimiento);
         if(ladoDisparo == 2){
             if (contador == 0) {
-                x -=50;
+                x -=25;
                 contador++;
             }
             movimientoIzquierda(movimiento);

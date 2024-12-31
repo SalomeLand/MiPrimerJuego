@@ -1,7 +1,8 @@
 package Juego.Armas;
 
 import java.awt.*;
-import java.util.ArrayList;
+
+import Juego.Personaje.Jugador;
 
 public class Metralleta extends Arma {
 
@@ -11,11 +12,14 @@ public class Metralleta extends Arma {
 
 
     public void disparo(Graphics g){
-        if(ladoDisparo == 1) paintArma(g);
-        if(ladoDisparo == 2) paintArmaIzquierda(g);
+        if(lado == 2) paintArma(g);
+        if(lado == 1) paintArmaIzquierda(g);
     }
 
-
+    public void follow(Jugador player){
+        y = player.getY() + player.getHeight() / 2 + 1;
+        x = player.getX() + 6;
+    }
 
     public void paintArma(Graphics g){
         g.setColor(Color.black);
@@ -49,7 +53,7 @@ public class Metralleta extends Arma {
     }
 
     public void paintArmaIzquierda(Graphics g){
-        int x2 = x  - 50;
+        int x2 = x  - 25;
         g.setColor(Color.black);
         g.fillRect(x2 - 14 + 37 - 7, y, 7,1);
         g.fillRect(x2 - 13 + 37 - 3, y + 1, 3,1);
