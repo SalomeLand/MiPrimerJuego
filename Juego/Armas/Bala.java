@@ -7,14 +7,29 @@ public class Bala {
     private int ladoDisparo;
     private int x;
     private int y;
+    private int contador = 0;
 
-    public Bala(int x, int y){
+    public Bala(int x, int y, int ladoDisparo){
         this.x = x;
         this.y = y;
+        this.ladoDisparo = ladoDisparo;
     }
 
-    public void movimiento(int movimiento1){
-        x += movimiento1;
+    public void movimientoDerecha(int movimiento){
+        x += movimiento;
+    }
+    public void movimientoIzquierda(int movimiento){
+        x = x - movimiento;
+    }
+    public void movimientoBala(int movimiento){
+        if(ladoDisparo == 1) movimientoDerecha(movimiento);
+        if(ladoDisparo == 2){
+            if (contador == 0) {
+                x -=50;
+                contador++;
+            }
+            movimientoIzquierda(movimiento);
+        }
     }
 
     public int getLadoDisparo() {

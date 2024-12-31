@@ -1,15 +1,20 @@
 package Juego.Interfaz;
 
+import java.awt.Color;
+
 import javax.swing.*;
+
+import Juego.Modificaciones.Boton;
 
 public class Inicio extends JFrame{
     
-    private JButton btnEspada,btnArma;
+    private Boton btnEspada,btnArma;
     private JPanel panel;
 
     public Inicio(){
         panel = new JPanel();
         panel.setLayout(null);
+        panel.setBackground(Color.BLACK);
         componentes();
         listener();
         add(panel);
@@ -29,12 +34,12 @@ public class Inicio extends JFrame{
     }
 
     public void componentes(){
-        btnEspada = new JButton("Espada");
-        btnEspada.setBounds(50,20,150,40);
+        btnEspada = new Boton("Espada");
+        btnEspada.setBounds(50,20,150,50);
         panel.add(btnEspada);
 
-        btnArma =  new JButton("Arma");
-        btnArma.setBounds(50, 80, 150, 40);
+        btnArma =  new Boton("Metralleta");
+        btnArma.setBounds(50, 80, 150, 50);
         panel.add(btnArma);
     }
 

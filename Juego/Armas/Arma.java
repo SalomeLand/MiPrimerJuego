@@ -2,13 +2,15 @@ package Juego.Armas;
 
 import Juego.Personaje.Jugador;
 
-public class Arma {
+public abstract class Arma {
     protected int velocidad;
     protected int daño;
     protected int width;
     protected int height;
     protected int x;
     protected int y;
+    protected boolean disparo;
+    protected int ladoDisparo;
 
     public Arma(int velocidad, int daño,int width, int height,int x, int y){
         this.daño = daño;
@@ -20,8 +22,20 @@ public class Arma {
     }
 
     public void follow(Jugador player){
-        y = player.getY() + player.getHeight() / 4;
-        x = player.getX() + 25;
+        y = player.getY() + player.getHeight() / 2 + 1;
+        x = player.getX() + 6;
+    }
+
+    public boolean getDisparo(){
+        return disparo;
+    }
+
+    public void setDisparo(boolean disparo) {
+        this.disparo = disparo;
+    }
+
+    public void setLadoDisparo(int ladoDisparo) {
+        this.ladoDisparo = ladoDisparo;
     }
 
     public int getVelocidad() {
@@ -70,6 +84,10 @@ public class Arma {
 
     public void setY(int y) {
         this.y = y;
+    }
+
+    public int getLadoDisparo() {
+        return ladoDisparo;
     }
     
     

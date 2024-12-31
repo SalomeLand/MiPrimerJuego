@@ -1,22 +1,24 @@
 package Juego.Personaje;
 import java.awt.*;
 
+import Juego.Armas.Arma;
+
 public class Jugador extends Personaje {
     private boolean swordSwinging=false;
-    private int ladoEspada = 0;
+    private int ladoEspada = 0,aux;
     private boolean inmunidad = false;
+    private Arma arma;
 
     public Jugador(int x, int y,int salud) {
-        super(x, y, 40, 40,salud);
+        super(x, y, 27, 40,salud);
     }
 
     public void move(int dx, int dy) {
-        x += dx;
-        y += dy;
+            x += dx;
+            y += dy;
     }
 
     public void attack(Graphics g) {
-        g.fillRect(x, y, width, height);
         if (swordSwinging) { 
             if (ladoEspada == 1) {
                 paintEspada2(g);
@@ -24,6 +26,21 @@ public class Jugador extends Personaje {
         }
     }
 
+    public void equiparArma(Arma arma){
+        this.arma = arma;
+    }
+
+    public void setAux(int aux) {
+        this.aux = aux;
+    }
+
+    public int getAux() {
+        return aux;
+    }
+
+    public Arma getArma(){
+        return arma;
+    }
     
     public void setInmunidad(boolean inmunidad) {
         this.inmunidad = inmunidad;
@@ -51,10 +68,10 @@ public class Jugador extends Personaje {
         return ladoEspada;
     }
     public void paintBarraVida(Graphics g){
-        g.setColor(new Color(0,0,0,150));
-        g.fillRect(x + 5, y - 20, 30, 8);
-        g.setColor(new Color(255,0,0,200));
-        g.fillRect(x + 8, y - 18, (int)(salud/8),4);
+        g.setColor(new Color(0,0,0));
+        g.fillRect(x , y - 20, 25, 8);
+        g.setColor(new Color(255,0,0));
+        g.fillRect(x + 2, y - 18, (int)(salud/10),4);
         
     }
 
@@ -127,6 +144,75 @@ public class Jugador extends Personaje {
         g.fillRect((x3 - 24+25 - 1) * t, (y2 + 6) * t, 1 * t, 1 * t);
     }
 
+    public void paintJugador(Graphics g){
+        
+        g.setColor(Color.decode("#fff9bd"));
+        g.fillRect(x + 2, y + 7, 20, 13);
+        g.fillRect(x + 6, y + 20, 12, 1);
+        
+        g.setColor(Color.decode("#f5e49c"));
+        g.fillRect(x + 2, y + 10, 6, 5);
+        g.fillRect(x + 2, y + 15, 5, 2);
+        g.fillRect(x + 2, y + 17, 4, 3);
+        
+        g.setColor(Color.decode("#ff7e00"));
+        g.fillRect(x + 4, y + 21, 16, 12);
+        
+        g.setColor(Color.decode("#ffc20e"));
+        g.fillRect(x + 9, y + 22, 8, 3);
+        g.fillRect(x + 10, y + 25, 5, 1);
+        
+        g.setColor(Color.decode("#e5aa7a"));
+        g.fillRect(x + 4, y + 33, 16, 4);
+        g.fillRect(x + 10, y + 32, 7, 1);
+        g.fillRect(x + 5, y + 37, 2, 2);
+        g.fillRect(x + 17, y + 37, 2, 2);
+        
+        g.setColor(Color.black);
+        //Boca y ojos
+        g.fillRect(x + 10, y + 12, 2, 3);
+        g.fillRect(x + 17, y + 12, 2, 3);
+        g.fillRect(x + 12, y + 19, 5, 1);
+        //Cabello
+        g.fillRect(x + 4, y , 16, 1);
+        g.fillRect(x + 3, y + 1, 19, 2);
+        g.fillRect(x + 2, y + 3, 23, 4);
+        g.fillRect(x + 1, y + 4, 4, 10);
+        g.fillRect(x + 5, y + 7, 9, 1);
+        g.fillRect(x + 5, y + 8, 4, 2);
+        g.fillRect(x + 5, y + 10, 1, 2);
+        g.fillRect(x + 21, y + 2, 2, 1);
+        g.fillRect(x + 22, y + 7, 2, 1);
+
+        //contorno
+        int[] x1 = {22,1,21,2,3,4,6,20,3,20,11,12,8,4,7,16,19,5,17,21,22,25,26,22,21};
+        int[] y1 = {8,14,17,18,19,20,21,19,22,22,22,24,36,37,37,37,37,39,39,24,25,26,27,30,29};
+        int[] largo = {1,1,1,1,1,2,12,1,1,1,4,2,8,1,1,1,1,2,2,1,3,2,1,5,2};
+        int[] altura = {9,4,3,2,1,1,1,1,15,15,2,2,1,2,2,2,2,1,1,1,1,1,3,1,1};
+
+        for(int i = 0;i < x1.length; i++){
+            g.fillRect(x + x1[i],y + y1[i], largo[i], altura[i]);
+        }
+
+
+
+    }
+    public void pintarMano(Graphics g){
+        g.setColor(Color.decode("#fff9bd"));
+        g.fillRect(x + 9, y + 26, 6, 4);
+        g.fillRect(x + 8, y + 27, 1, 2);
+
+        int[] x1 = {7,9,10,14,15,14,8,6,5,5};
+        int[] y1 = {24,25,26,26,27,29,30,29,28,26};
+        int[] largo = {3,2,4,1,1,1,7,3,2,1};
+        int[] altura = {1,1,1,2,3,2,1,1,1,2};
+        g.setColor(Color.black);
+        for(int i = 0;i < x1.length; i++){
+            g.fillRect(x + x1[i],y + y1[i], largo[i], altura[i]);
+        }
+
+    }
+
     public boolean isSwordSwinging() {
         return swordSwinging;
     }
@@ -134,5 +220,5 @@ public class Jugador extends Personaje {
     public boolean getInmunidad() {
         return inmunidad;
     }
-    
+
 }

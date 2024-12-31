@@ -25,6 +25,7 @@ public class Juego extends JPanel implements ActionListener, KeyListener {
     private int seleccion, tiempoDisparo;
     private Timer timeEspada,timeArma;
     private JFrame frame;
+    long lastMoveTime = 0; 
     
 
 
@@ -63,7 +64,7 @@ public class Juego extends JPanel implements ActionListener, KeyListener {
                 
                 while (balaIterator.hasNext()) {
                     Bala bala = balaIterator.next();
-                    bala.movimiento(metralleta.getVelocidad());
+                    bala.movimientoBala(metralleta.getVelocidad());
                 
                     if (bala.getX() > player.getX() + 600) {
                         balaIterator.remove(); // Eliminar la bala
@@ -179,14 +180,18 @@ public class Juego extends JPanel implements ActionListener, KeyListener {
         this.addMouseListener(new MouseAdapter() {
             @Override
             public void mousePressed(MouseEvent e) {  
-                Bala bala = new Bala(player.getX() + 40, player.getY() + player.getHeight()/4);
-                    int x = e.getX();    
-                    if (x > player.getX() + player.getWidth()/2) {
-                        bala.setLadoDisparo(1);
-                    }else bala.setLadoDisparo(2);
+                int x = e.getX();    
+                if (x > player.getX() + player.getWidth()/2) {
+                    Bala bala = new Bala(player.getX() + 15, player.getY() + player.getHeight()/2 + 4,1);
+                    metralleta.setLadoDisparo(1);
                     balas.add(bala);
-                    metralleta.setDisparo(true);
-                    startSending();
+                }else {
+                    Bala bala = new Bala(player.getX() + 15, player.getY() + player.getHeight()/ 2 + 4,2);
+                    metralleta.setLadoDisparo(2);
+                    balas.add(bala);
+                }
+                metralleta.setDisparo(true);
+                startSending(x);
     
                 }
             public void mouseReleased(MouseEvent e) {
@@ -195,13 +200,18 @@ public class Juego extends JPanel implements ActionListener, KeyListener {
             }
         });
     }
-    private void startSending() {
+    private void startSending(int x) {
         if (timer2 == null) {
             timer2 = new Timer(150, new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
-                    if (metralleta.getDisparo()) {
-                        Bala bala = new Bala(player.getX() + 40, player.getY() + player.getHeight()/4);
+                    if(x > player.getX() + player.getWidth()/2){
+                        Bala bala = new Bala(player.getX() + 15, player.getY() + player.getHeight()/2 + 4,1 );
+                        metralleta.setLadoDisparo(1);
+                        balas.add(bala);
+                    }else{
+                        Bala bala = new Bala(player.getX() + 15, player.getY() + player.getHeight()/2 + 4,2 );
+                        metralleta.setLadoDisparo(2);
                         balas.add(bala);
                     }
                 }
@@ -222,18 +232,20 @@ public class Juego extends JPanel implements ActionListener, KeyListener {
         super.paintComponent(g);
         player.paintBarraVida(g);
         player.attack(g);
+        player.paintJugador(g);
 
         if(seleccion == 2){
-            metralleta.paintArma(g);
             for(Bala bala : balas){
                 bala.paintBala(g);
             }
+            metralleta.disparo(g);
         }
         // Dibujar zombies
         for (Zombie zombie : zombies) {
             zombie.paint(g);
             zombie.paintBarraVida(g);
         }
+        player.pintarMano(g);
     }
 
     public Zombie creacionZombie(Jugador player){
@@ -253,15 +265,37 @@ public class Juego extends JPanel implements ActionListener, KeyListener {
         return new Zombie(player.getX() - 100,player.getY() -175,200,20);
     }
 
-    @Override
-    public void keyPressed(KeyEvent e) {
+   /*
+   @Override
+   public void keyPresse2d(KeyEvent e) {
         int key = e.getKeyCode();
         if (key == KeyEvent.VK_W) player.move(0, -15);
         if (key == KeyEvent.VK_S) player.move(0, 15);
         if (key == KeyEvent.VK_A) player.move(-15, 0);
         if (key == KeyEvent.VK_D) player.move(15, 0);
+        empezarCaminar();
     }
+    */
+    public void keyPressed(KeyEvent e) {
+        final int INTERVALO = 50;
+        // Obtén el tiempo actual
+        long currentTime = System.currentTimeMillis();
 
+        // Si ha pasado el intervalo necesario, mueve al jugador
+        if (currentTime - lastMoveTime >= INTERVALO) {
+            if (e.getKeyCode() == KeyEvent.VK_W) {
+                 player.move(0, -15); // Mueve a la izquierda
+            }  if (e.getKeyCode() == KeyEvent.VK_S) {
+                player.move(0, 15);
+            }  if (e.getKeyCode() == KeyEvent.VK_A) {
+                player.move(-15, 0);// Mueve hacia arriba0
+            }  if (e.getKeyCode() == KeyEvent.VK_D) {
+               player.move(15, 0); // Mueve hacia abajo
+            }
+            // Actualiza el tiempo de la última vez que se movió
+            lastMoveTime = currentTime;
+        }
+    }
     @Override
     public void keyReleased(KeyEvent e) {
     }
