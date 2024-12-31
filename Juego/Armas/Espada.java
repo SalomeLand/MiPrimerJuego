@@ -8,7 +8,7 @@ import Juego.Personaje.Jugador;
 
 public class Espada extends Arma {
     private boolean swordSwinging;
-
+    private int contador;
     public Espada(int velocidad,int daño,int width, int height, int x1, int y){
         super(velocidad, daño, width, height, x1, y);
     }
@@ -115,4 +115,12 @@ public class Espada extends Arma {
         this.swordSwinging = swordSwinging;
     }
 
+    public int getContador() {
+        return contador;
+    }
+
+    public void setContador(int contador) {
+        this.contador = contador;
+    }
+    
 }
