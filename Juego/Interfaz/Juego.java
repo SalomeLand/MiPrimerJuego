@@ -11,11 +11,14 @@ import javax.swing.*;
 import Juego.Armas.Bala;
 import Juego.Armas.Espada;
 import Juego.Armas.Metralleta;
+import Juego.Escenarios.TerrenoInicial;
 import Juego.Personaje.Jugador;
 import Juego.Personaje.Zombie;
 
 public class Juego extends JPanel implements ActionListener, KeyListener {
 
+    private TerrenoInicial terreno;
+    private int tamañoTerreno;
     private Jugador player;
     private ArrayList<Zombie> zombies;
     private ArrayList<Bala> balas;
@@ -41,7 +44,8 @@ public class Juego extends JPanel implements ActionListener, KeyListener {
         balas = new ArrayList<>();
         metralleta = new Metralleta(20, 100, 37, 14, player.getX() + 25, player.getY() + player.getHeight()/4);
         espada = new Espada(20, 10, 25, 15, 20, player.getY() + player.getHeight()/4);
-
+        terreno = new TerrenoInicial();
+        tamañoTerreno = player.getX() + 400;
         timeEspada = new Timer(16, new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -125,6 +129,8 @@ public class Juego extends JPanel implements ActionListener, KeyListener {
         setFocusable(true);
         frame = new JFrame();
         frame.setSize(800, 600);
+        // Opcional: Ocultar la barra de título para una experiencia más inmersiva
+        // frame.setUndecorated(true);
         frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         frame.setLocationRelativeTo(null);
         frame.add(this);
@@ -291,6 +297,13 @@ public class Juego extends JPanel implements ActionListener, KeyListener {
             zombie.paintBarraVida(g);
         }
         player.pintarMano(g);
+        if (player.getX() + 464 > tamañoTerreno) {
+            terreno.generadorTerreno(g, player);
+            tamañoTerreno += 64;
+        }
+        //terreno.paintArbol(g);
+        //terreno.paintPiedra(g);
+
     }
 
     public Zombie creacionZombie(Jugador player){
