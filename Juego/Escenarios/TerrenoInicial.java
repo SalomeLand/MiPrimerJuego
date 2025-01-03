@@ -2,7 +2,7 @@ package Juego.Escenarios;
 
 import java.awt.Color;
 import java.awt.Graphics;
-import java.util.Random;
+
 
 import Juego.Personaje.Jugador;
 
@@ -52,16 +52,5 @@ public class TerrenoInicial {
         int x1 = player.getX() + 464;
         g.setColor(Color.gray);
         g.fillRect(x1, y, 30, 20);
-    }
-
-    public void generadorTerreno(Graphics g, Jugador player){
-        Random ran = new Random();
-        int y = 0;
-        for(int i = 0; i < 13; i++){
-            int random = ran.nextInt(2);
-            if (random == 0) paintArbol(g);
-            if (random == 1) paintPiedra(g,player,y);
-            y += 64;
-        }
     }
 }

@@ -11,14 +11,11 @@ import javax.swing.*;
 import Juego.Armas.Bala;
 import Juego.Armas.Espada;
 import Juego.Armas.Metralleta;
-import Juego.Escenarios.TerrenoInicial;
 import Juego.Personaje.Jugador;
 import Juego.Personaje.Zombie;
 
 public class Juego extends JPanel implements ActionListener, KeyListener {
 
-    private TerrenoInicial terreno;
-    private int tamañoTerreno;
     private Jugador player;
     private ArrayList<Zombie> zombies;
     private ArrayList<Bala> balas;
@@ -44,8 +41,7 @@ public class Juego extends JPanel implements ActionListener, KeyListener {
         balas = new ArrayList<>();
         metralleta = new Metralleta(20, 100, 37, 14, player.getX() + 25, player.getY() + player.getHeight()/4);
         espada = new Espada(20, 10, 25, 15, 20, player.getY() + player.getHeight()/4);
-        terreno = new TerrenoInicial();
-        tamañoTerreno = player.getX() + 400;
+
         timeEspada = new Timer(16, new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -297,10 +293,6 @@ public class Juego extends JPanel implements ActionListener, KeyListener {
             zombie.paintBarraVida(g);
         }
         player.pintarMano(g);
-        if (player.getX() + 464 > tamañoTerreno) {
-            terreno.generadorTerreno(g, player);
-            tamañoTerreno += 64;
-        }
         //terreno.paintArbol(g);
         //terreno.paintPiedra(g);
 
