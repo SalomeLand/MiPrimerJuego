@@ -2,12 +2,13 @@ package Juego.Personaje;
 import java.awt.*;
 
 import Juego.Armas.Arma;
+import Juego.Sonidos.Sonidos;
 
 public class Jugador extends Personaje {
 
     private int lado = 1,aux;
     private boolean inmunidad = false;
-    private Arma arma;
+    private Sonidos sonido = new Sonidos();
 
     public Jugador(int x, int y,int salud) {
         super(x, y, 27, 40,salud);
@@ -17,7 +18,7 @@ public class Jugador extends Personaje {
             x += dx;
             y += dy;
     }
-
+    
     public void follow(Graphics g) {
         //g.fillRect(x, y, width, height);
         if (lado == 1) {
@@ -26,14 +27,10 @@ public class Jugador extends Personaje {
             paintJugador(g);
         }
     }
-
-    public void equiparArma(Arma arma){
-        this.arma = arma;
-    }
-
-    public Arma getArma(){
-        return arma;
-    }
+    
+        public void reproducirDaño(){
+            sonido.reproducirGolpe();
+        }
 
     public void setAux(int aux) {
         this.aux = aux;
@@ -50,7 +47,6 @@ public class Jugador extends Personaje {
     public void setLado(int lado){
         this.lado = lado;
     }
-
     public int getLado(){
         return lado;
     }

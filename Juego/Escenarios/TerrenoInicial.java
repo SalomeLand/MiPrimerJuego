@@ -30,10 +30,6 @@ public class TerrenoInicial {
             g.fillRect(145, x, 10, 50);
             x += 100;
         }
-
-        g.fillRect(20, 20, 64, 64);
-
-
     }
 
     public void paintArbol(Graphics g){

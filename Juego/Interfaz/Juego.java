@@ -2,46 +2,53 @@ package Juego.Interfaz;
 
 import java.awt.*;
 import java.awt.event.*;
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Random;
 import java.util.Iterator;
 
+import javax.sound.sampled.AudioInputStream;
+import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.Clip;
+import javax.sound.sampled.FloatControl;
+import javax.sound.sampled.LineUnavailableException;
+import javax.sound.sampled.UnsupportedAudioFileException;
 import javax.swing.*;
 
 import Juego.Armas.Bala;
 import Juego.Armas.Espada;
 import Juego.Armas.Metralleta;
+import Juego.Escenarios.TerrenoInicial;
 import Juego.Personaje.Jugador;
 import Juego.Personaje.Zombie;
 
 public class Juego extends JPanel implements ActionListener, KeyListener {
 
     private Jugador player;
+    private TerrenoInicial terreno;
     private ArrayList<Zombie> zombies;
     private ArrayList<Bala> balas;
     private Metralleta metralleta;
     private Espada espada;
-    private Timer timer;
-    private Timer timer2;
-    private int cantidadZombie = 2;
-    private int seleccion;
+    private Timer timer,timer2;
     private Timer timeEspada,timeArma;
+    private int cantidadZombie = 0, seleccion;
     private JFrame frame;
-    long lastMoveTime = 0;
-    
+    long lastMoveTime = 0;    
 
 
     public Juego(int seleccion) {
         this.seleccion = seleccion;
         setPreferredSize(new Dimension(800, 600));
-        setBackground(Color.ORANGE);
+        setBackground(Color.DARK_GRAY);
 
         player = new Jugador(300, 300,200);
         zombies = new ArrayList<>();
         balas = new ArrayList<>();
         metralleta = new Metralleta(20, 100, 37, 14, player.getX() + 25, player.getY() + player.getHeight()/4);
         espada = new Espada(20, 10, 25, 15, 20, player.getY() + player.getHeight()/4);
-
+        terreno = new TerrenoInicial();
         timeEspada = new Timer(16, new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -71,8 +78,7 @@ public class Juego extends JPanel implements ActionListener, KeyListener {
                 
                 while (balaIterator.hasNext()) {
                     Bala bala = balaIterator.next();
-                    bala.movimientoBala(metralleta.getVelocidad());
-                
+                    bala.movimientoBala(metralleta.getVelocidad(),player);
                     if (bala.getX() > player.getX() + 600) {
                         balaIterator.remove(); // Eliminar la bala
                         break;
@@ -117,7 +123,13 @@ public class Juego extends JPanel implements ActionListener, KeyListener {
             default:
                 break;
         }
-
+        reproducirZombie();
+        Timer timerSonidoZombi = new Timer(24000, new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                reproducirZombie();
+            }});
+        timerSonidoZombi.start();
         timer =  new Timer(16, this);
         timer.start();
         
@@ -132,12 +144,16 @@ public class Juego extends JPanel implements ActionListener, KeyListener {
         frame.add(this);
         frame.setVisible(true);
     }
-
     
     public void actionPerformed(ActionEvent e) {
         if (zombies.size() < cantidadZombie) {
             zombies.add(creacionZombie(player));
         }
+
+        if(metralleta.getDisparo()){
+            //timeDisparo.start();
+        } 
+       // else timeDisparo.stop();
         for (Zombie zombie : zombies) {
             zombie.follow(player);
             Rectangle hitboxJugador = player.getBounds();
@@ -148,9 +164,10 @@ public class Juego extends JPanel implements ActionListener, KeyListener {
                         if(player.getSalud() <= 0){
                             System.out.println("Jugador sin vida");
                             JOptionPane.showMessageDialog(this, "Has muerto");
-                            frame.setVisible(false);
                             timer.stop();
+                            frame.setVisible(false);
                         }else player.setSalud(player.getSalud() - zombie.getDaño());
+                        player.reproducirDaño();
                         player.setInmunidad(true);
                         player.setContador(0);
                     }else if(player.getContador() >= 30) {
@@ -194,39 +211,43 @@ public class Juego extends JPanel implements ActionListener, KeyListener {
             @Override
             public void mousePressed(MouseEvent e) {  
                 int x = e.getX();    
+                int y = e.getY();
                 if (x > player.getX() + player.getWidth()/2) {
-                    Bala bala = new Bala(player.getX() + 15, player.getY() + player.getHeight()/2 + 4,1);
+                    Bala bala = new Bala(player.getX() + 30, player.getY() + player.getHeight()/2 + 4,1,x,y);
                     metralleta.setLado(2);
                     balas.add(bala);
                 }else {
-                    Bala bala = new Bala(player.getX() + 15, player.getY() + player.getHeight()/ 2 + 4,2);
+                    Bala bala = new Bala(player.getX() - 10, player.getY() + player.getHeight()/ 2 + 4,2,x,y);
                     metralleta.setLado(1);
                     balas.add(bala);
                 }
                 metralleta.setDisparo(true);
-                startSending(x);
-    
+                metralleta.reproducirDisparo();
+                startSending(x,y);
                 }
             public void mouseReleased(MouseEvent e) {
                 metralleta.setDisparo(false);
                 stopSending();
             }
         });
+        
     }
-    private void startSending(int x) {
+    private void startSending(int x, int y) {
         if (timer2 == null) {
             timer2 = new Timer(150, new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
                     if(x > player.getX() + player.getWidth()/2){
-                        Bala bala = new Bala(player.getX() + 15, player.getY() + player.getHeight()/2 + 4,1 );
+                        Bala bala = new Bala(player.getX() + 30 , player.getY() + player.getHeight()/2 + 4,1,x,y);
                         metralleta.setLado(2);
                         balas.add(bala);
                     }else{
-                        Bala bala = new Bala(player.getX() + 15, player.getY() + player.getHeight()/2 + 4,2 );
+                        Bala bala = new Bala(player.getX() - 10, player.getY() + player.getHeight()/2 + 4,2,x,y);
                         metralleta.setLado(1);
                         balas.add(bala);
+
                     }
+                    metralleta.reproducirDisparo();
                 }
             });
             timer2.start();
@@ -241,7 +262,7 @@ public class Juego extends JPanel implements ActionListener, KeyListener {
     }
     private void startSending2(int x) {
         if (timer2 == null) {
-            timer2 = new Timer(150, new ActionListener() {
+            timer2 = new Timer(300, new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
                     if(x > player.getX() + player.getWidth()/2){
@@ -249,7 +270,7 @@ public class Juego extends JPanel implements ActionListener, KeyListener {
                     }else{
                         espada.setLado(1);
                     }
-                    if (espada.getContador() >= 30) {
+                    if (espada.getContador() >= 20) {
                         espada.setSwordSwinging(true);
                         espada.setContador(0);
                     }else{
@@ -273,6 +294,7 @@ public class Juego extends JPanel implements ActionListener, KeyListener {
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
+        terreno.paintComponent(g);
         player.paintBarraVida(g);
         
         if(seleccion == 2){
@@ -295,7 +317,6 @@ public class Juego extends JPanel implements ActionListener, KeyListener {
         player.pintarMano(g);
         //terreno.paintArbol(g);
         //terreno.paintPiedra(g);
-
     }
 
     public Zombie creacionZombie(Jugador player){
@@ -334,14 +355,18 @@ public class Juego extends JPanel implements ActionListener, KeyListener {
         // Si ha pasado el intervalo necesario, mueve al jugador
         if (currentTime - lastMoveTime >= INTERVALO) {
             if (e.getKeyCode() == KeyEvent.VK_W) {
-                 player.move(0, -15); // Mueve a la izquierda
+                if (player.getY()>10) 
+                    player.move(0, -15); // Mueve a la izquierda
             }  if (e.getKeyCode() == KeyEvent.VK_S) {
                 player.move(0, 15);
             }  if (e.getKeyCode() == KeyEvent.VK_A) {
-                player.move(-15, 0);// Mueve hacia arriba0
+                espada.setLado(1);
                 metralleta.setLado(1);
+                if (player.getX()>10) 
+                player.move(-15, 0);
             }  if (e.getKeyCode() == KeyEvent.VK_D) {
                 metralleta.setLado(2);
+                espada.setLado(2);
                 player.move(15, 0); // Mueve hacia abajo
             }
             // Actualiza el tiempo de la última vez que se movió
@@ -354,5 +379,30 @@ public class Juego extends JPanel implements ActionListener, KeyListener {
 
     @Override
     public void keyTyped(KeyEvent e) {}
+
+    public static void reproducirZombie(){
+        try {
+            // Cargar el archivo de audio
+            File archivoAudio = new File("sonidoZombi.wav");
+
+            // Crear un flujo de audio
+            AudioInputStream audioStream = AudioSystem.getAudioInputStream(archivoAudio);
+
+            // Obtener un clip de audio
+            Clip clip = AudioSystem.getClip();
+            clip.open(audioStream);
+
+            FloatControl gainControl = (FloatControl) clip.getControl(FloatControl.Type.MASTER_GAIN);
+            // Establecer el volumen (por ejemplo, -10.0f reduce el volumen, 0.0f es el volumen máximo)
+            gainControl.setValue(-20.0f); 
+
+            // Cargar el audio en el clip
+
+            clip.start();
+
+        } catch (UnsupportedAudioFileException | IOException | LineUnavailableException  e) {
+            System.out.println("Error al reproducir el sonido: " + e);
+        }
+    }
 
 }

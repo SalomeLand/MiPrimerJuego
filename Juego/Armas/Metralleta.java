@@ -3,8 +3,11 @@ package Juego.Armas;
 import java.awt.*;
 
 import Juego.Personaje.Jugador;
+import Juego.Sonidos.Sonidos;
 
 public class Metralleta extends Arma {
+
+    private Sonidos sonido = new Sonidos();
 
     public Metralleta(int velocidad,int daño, int width, int height,int x, int y){
         super(velocidad, daño,width,height,x,y);
@@ -14,6 +17,10 @@ public class Metralleta extends Arma {
     public void disparo(Graphics g){
         if(lado == 2) paintArma(g);
         if(lado == 1) paintArmaIzquierda(g);
+    }
+
+    public void reproducirDisparo(){
+        sonido.reproducirDisparo();
     }
 
     public void follow(Jugador player){
@@ -82,5 +89,5 @@ public class Metralleta extends Arma {
         g.fillRect(x2 - 19 + 37 - 3, y + 10, 3,2);
         g.fillRect(x2 - 20 + 37 - 3 , y + 11, 3,2);
     }
-
+    
 }
