@@ -81,6 +81,13 @@ public class Bala {
     }
 
     public void paintBala(Graphics g){
+        if (puntoY < 300 ) {
+            paintBalaIzquierdaArriba(g);
+        }else if(ladoDisparo == 1) paintBalaDerecha(g);
+        else if(ladoDisparo == 2) paintBalaIzquierda(g);
+    }
+
+    public void paintBalaDerecha(Graphics g){
         int x = (int) this.getX();
         int y = (int) this.getY();
         g.setColor(Color.black);
@@ -88,6 +95,32 @@ public class Bala {
         g.fillRect(x + 5, y + 1, 1, 1);
         g.setColor(Color.ORANGE);
         g.fillRect(x+1, y+1, 4, 1);
+    }
+    public void paintBalaIzquierdaArriba(Graphics g){
+        int x = (int) this.getX();
+        int y = (int) this.getY();
+        g.setColor(Color.black);
+        g.fillRect(x, y, 2,1);
+        g.fillRect(x, y + 1, 1, 1);
+        g.fillRect(x + 2, y + 1, 1, 1);
+        g.fillRect(x + 2, y + 3, 1, 1);
+        g.fillRect(x + 2, y + 3, 1, 1);
+        g.fillRect(x + 3, y + 4, 1, 1);
+        g.fillRect(x + 3, y + 2, 1, 1);
+        g.fillRect(x + 4, y + 3, 1, 1);
+        g.setColor(Color.ORANGE);
+        g.fillRect(x+1, y+1, 1, 1);
+        g.fillRect(x+2, y+2, 1, 1);
+        g.fillRect(x+3, y+3, 1, 1);
+    }
+    public void paintBalaIzquierda(Graphics g){
+        int x = (int) this.getX();
+        int y = (int) this.getY();
+        g.setColor(Color.black);
+        g.fillRect(x + 1,  y, 5,3);
+        g.fillRect(x - 5 + 6 - 1, y + 1, 1, 1);
+        g.setColor(Color.ORANGE);
+        g.fillRect(x - 1 + 6 - 4, y+1, 4, 1);
     }
 
     public double getX() {

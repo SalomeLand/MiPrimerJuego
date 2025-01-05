@@ -33,7 +33,7 @@ public class Juego extends JPanel implements ActionListener, KeyListener {
     private Espada espada;
     private Timer timer,timer2;
     private Timer timeEspada,timeArma;
-    private int cantidadZombie = 0, seleccion;
+    private int cantidadZombie = 10, seleccion;
     private JFrame frame;
     long lastMoveTime = 0;    
 
@@ -149,11 +149,6 @@ public class Juego extends JPanel implements ActionListener, KeyListener {
         if (zombies.size() < cantidadZombie) {
             zombies.add(creacionZombie(player));
         }
-
-        if(metralleta.getDisparo()){
-            //timeDisparo.start();
-        } 
-       // else timeDisparo.stop();
         for (Zombie zombie : zombies) {
             zombie.follow(player);
             Rectangle hitboxJugador = player.getBounds();
@@ -230,7 +225,6 @@ public class Juego extends JPanel implements ActionListener, KeyListener {
                 stopSending();
             }
         });
-        
     }
     private void startSending(int x, int y) {
         if (timer2 == null) {
