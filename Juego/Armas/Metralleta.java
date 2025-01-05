@@ -42,9 +42,11 @@ public class Metralleta extends Arma {
     }
 
     public boolean acertarDisparo(Rectangle hitbox,Bala bala){
+        boolean acierto = false;
         if (bala.getHitboxBala().intersects(hitbox)) {
-            return true;
-        }else return false;
+            acierto = true;
+        }else acierto = false;
+        return acierto;
     }
 
     public void reproducirDisparo(){
@@ -52,8 +54,8 @@ public class Metralleta extends Arma {
     }
 
     public void follow(Jugador player){
-        y = player.getY() + player.getHeight() / 2 + 1;
-        x = player.getX() + 6;
+        y = (int)player.getY() + player.getHeight() / 2 + 1;
+        x = (int)player.getX() + 6;
     }
 
     public ArrayList<Bala> getBalas(){

@@ -45,7 +45,7 @@ public class TerrenoInicial {
     }
 
     public void paintPiedra(Graphics g, Jugador player, int y){
-        int x1 = player.getX() + 464;
+        int x1 = (int)player.getX() + 464;
         g.setColor(Color.gray);
         g.fillRect(x1, y, 30, 20);
     }

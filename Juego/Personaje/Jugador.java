@@ -1,6 +1,8 @@
 package Juego.Personaje;
 
 import java.awt.*;
+
+import Juego.Armas.Arma;
 import Juego.Sonidos.Sonidos;
 
 public class Jugador extends Personaje {
@@ -8,6 +10,7 @@ public class Jugador extends Personaje {
     private int lado = 1,aux, zombiesEliminados = 1;
     private boolean inmunidad = false;
     private Sonidos sonido = new Sonidos();
+    Arma arma;
 
     public Jugador(int x, int y,int salud) {
         super(x, y, 27, 40,salud);
@@ -48,8 +51,29 @@ public class Jugador extends Personaje {
     public int getLado(){
         return lado;
     }
+    
+    public void equiparArma(Arma arma){
+        this.arma = arma;
+    }
+
+    public Arma usarArma(){
+        return arma;
+    }
+    
+    public void recibirDaño(double daño) {
+        if (vidaActual <= 0) {
+            estaVivo = false;
+        }else{
+            inmunidad = true;
+            this.vidaActual -= daño;
+            contador = 0;
+        }
+        sonido.reproducirGolpe();
+    }
 
     public void paintJugador(Graphics g){
+        int x = (int) this.x;
+        int y = (int) this.y;
         g.setColor(Color.decode("#fff9bd"));
         g.fillRect(x + 2, y + 7, 20, 13);
         g.fillRect(x + 6, y + 20, 12, 1);
@@ -100,6 +124,8 @@ public class Jugador extends Personaje {
     }
 
     public void paintJugadorIzquierda(Graphics g){
+        int x = (int) this.x;
+        int y = (int) this.y;
         g.setColor(Color.decode("#fff9bd"));
         g.fillRect(x - 2 + 27 - 20, y + 7, 20, 13);
         g.fillRect(x - 6+ 27 - 12, y + 20, 12, 1);
@@ -150,6 +176,8 @@ public class Jugador extends Personaje {
     }
 
     public void pintarMano(Graphics g){
+        int x = (int) this.x;
+        int y = (int) this.y;
         g.setColor(Color.decode("#fff9bd"));
         g.fillRect(x + 9, y + 26, 6, 4);
         g.fillRect(x + 8, y + 27, 1, 2);

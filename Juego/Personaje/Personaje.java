@@ -3,16 +3,17 @@ import java.awt.*;
 
 // Clase base para todos los objetos del juego
 public class Personaje {
-    protected int x;
-    protected int y;
+    protected double x;
+    protected double y;
     protected int width;
     protected int height;
     protected int salud;
-    private double vidaActual;
-    private int contador = 10;
+    protected double vidaActual;
+    protected int contador = 10;
+    protected boolean estaVivo = true;
 
 
-    public Personaje(int x, int y, int width, int height,int salud) {
+    public Personaje(double x, double y, int width, int height,int salud) {
         this.x = x;
         this.y = y;
         this.width = width;
@@ -24,27 +25,29 @@ public class Personaje {
     public void paintBarraVida(Graphics g){
         int anchoVida = (int) ((width-4) * (vidaActual/salud));
         g.setColor(Color.black);
-        g.fillRect(x, y-20, width, 8);
+        g.fillRect((int)x,(int) y-20, width, 8);
         g.setColor(Color.red);
-        g.fillRect(x + 2, y - 18, anchoVida,4);
+        g.fillRect((int)x + 2, (int)y - 18, anchoVida,4);
     }
     
     public Rectangle getBounds() {
-        return new Rectangle(x, y, width+1, height+1);
+        return new Rectangle((int)x,(int) y, width+1, height+1);
     }
 
-    
-    public int getX() {
+    public double getX() {
         return x;
     }
 
+    public boolean estaVivo(){
+        return estaVivo;
+    }
 
     public int getContador() {
         return contador;
     }
 
 
-    public int getY() {
+    public double getY() {
         return y;
     }
 
@@ -58,12 +61,12 @@ public class Personaje {
         return height;
     }
 
-    public void setX(int x) {
+    public void setX(double x) {
         this.x = x;
     }
 
 
-    public void setY(int y) {
+    public void setY(double y) {
         this.y = y;
     }
 
@@ -81,12 +84,6 @@ public class Personaje {
     public double getSalud() {
         return vidaActual;
     }
-
-
-    public void setSalud(double salud) {
-        this.vidaActual = salud;
-    }
-
 
     public void setContador(int contador) {
         this.contador = contador;

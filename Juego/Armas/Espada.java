@@ -24,8 +24,8 @@ public class Espada extends Arma {
     }
 
     public void follow(Jugador player){
-        y = player.getY() + player.getHeight() / 4 + 10;
-        x = player.getX() + 10;
+        y = (int)player.getY() + player.getHeight() / 4 + 10;
+        x = (int)player.getX() + 10;
     }
 
     public void atacar(Graphics g){

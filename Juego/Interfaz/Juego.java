@@ -32,7 +32,7 @@ public class Juego extends JPanel implements ActionListener, KeyListener {
     private Metralleta metralleta;
     private Espada espada;
     private Timer timer,timer2;
-    private Timer timeEspada,timeArma;
+    private Timer timeEspada,timeArma, timeCrearZombies;
     private int cantidadZombie = 3, seleccion;
     private JFrame frame;
     long lastMoveTime = 0;    
@@ -46,8 +46,8 @@ public class Juego extends JPanel implements ActionListener, KeyListener {
 
         player = new Jugador(300, 300,200);
         zombies = new ArrayList<>();
-        metralleta = new Metralleta(20, 100, 37, 14, player.getX() + 25, player.getY() + player.getHeight()/4);
-        espada = new Espada(20, 10, 25, 15, 20, player.getY() + player.getHeight()/4);
+        metralleta = new Metralleta(20, 100, 37, 14, (int)player.getX() + 25, (int)player.getY() + player.getHeight()/4);
+        espada = new Espada(20, 10, 25, 15, 20, (int)player.getY() + player.getHeight()/4);
         terreno = new TerrenoInicial();
         timeEspada = new Timer(16, new ActionListener() {
             @Override
@@ -61,12 +61,17 @@ public class Juego extends JPanel implements ActionListener, KeyListener {
                             if(zombie.getSalud() <= 0){
                                 zombies.remove(zombie);
                                 break; 
-                            }else zombie.setSalud(zombie.getSalud() - espada.getDaño());
+                            }else zombie.setSalud(espada.getDaño());
                         }
                     }
                 }
                 espada.follow(player);
                 repaint();
+            }
+        });
+        timeCrearZombies = new Timer(350,new ActionListener() {
+            public void actionPerformed(ActionEvent e){
+                zombies.add(creacionZombie(player));
             }
         });
         timeArma = new Timer(16, new ActionListener() {
@@ -83,6 +88,13 @@ public class Juego extends JPanel implements ActionListener, KeyListener {
                         balaIterator.remove(); // Eliminar la bala
                         break;
                     }
+                    if (boss != null && boss.estaVivo()) {
+                        if (bala.getHitboxBala().intersects(boss.getBounds())) {
+                            boss.recibirDaño(metralleta.getDaño());
+                            balaIterator.remove();
+                            break;
+                        }
+                    }
                 
                     // Iterar sobre los zombies
                     while (zombieIterator.hasNext()) {
@@ -93,7 +105,7 @@ public class Juego extends JPanel implements ActionListener, KeyListener {
                                     zombieIterator.remove(); // Eliminar el zombie
                                     player.zombieMuerto();
                                 }else {
-                                    zombie.setSalud(zombie.getSalud() - metralleta.getDaño());
+                                    zombie.setSalud( metralleta.getDaño());
                                 }
                                 balaIterator.remove(); // Eliminar la bala
                                 bandera = true;
@@ -148,8 +160,9 @@ public class Juego extends JPanel implements ActionListener, KeyListener {
     
     public void actionPerformed(ActionEvent e) {
         if (zombies.size() < cantidadZombie) {
-            zombies.add(creacionZombie(player));
-        }
+            timeCrearZombies.start();
+            //zombies.add(creacionZombie(player));
+        }else timeCrearZombies.stop();
         for (Zombie zombie : zombies) {
             zombie.follow(player);
             Rectangle hitboxJugador = player.getBounds();
@@ -157,15 +170,14 @@ public class Juego extends JPanel implements ActionListener, KeyListener {
                 if (zombie.getContador()%10 == 0){
                     if (!player.getInmunidad()) {
                         System.out.println("golpe");
-                        if(player.getSalud() <= 0){
-                            System.out.println("Jugador sin vida");
+                        player.recibirDaño(zombie.getDaño());
+                        /*if(player.getSalud() <= 0){
                             JOptionPane.showMessageDialog(this, "Has muerto");
                             timer.stop();
                             frame.setVisible(false);
-                        }else player.setSalud(player.getSalud() - zombie.getDaño());
-                        player.reproducirDaño();
+                        }else player.setSalud(zombie.getDaño());
                         player.setInmunidad(true);
-                        player.setContador(0);
+                        player.setContador(0);*/
                     }else if(player.getContador() >= 30) {
                         player.setInmunidad(false);
                     }
@@ -176,13 +188,24 @@ public class Juego extends JPanel implements ActionListener, KeyListener {
         if (player.getInmunidad()) {
             player.setContador(player.getContador() + 1);
         }
-        if (player.getZombiesEliminados()%9 == 0) {
-            boss = new BossUno(20, 20, 50, 40, 300);
+        if (player.getZombiesEliminados()%9 == 0 && boss == null) {
+            boss = new BossUno(20, 20, 50, 40, 250);
             cantidadZombie = 0;
         }
-        if (boss != null) {
+        if (boss != null && boss.estaVivo()) {
             boss.follow(player);
-            boss.getMetralleta().disparar(boss.getX()+500);
+            boss.getMetralleta().disparar((int)boss.getX()+500);
+            for(int i =0;i < boss.getMetralleta().getBalas().size();i++){
+                if (boss.getMetralleta().acertarDisparo(player.getBounds(),boss.getMetralleta().getBalas().get(i))) {
+                    player.recibirDaño(boss.getMetralleta().getDaño());
+                    boss.getMetralleta().getBalas().remove(i);
+                    break;
+                }
+            }
+        }else cantidadZombie = 10;
+        if (!player.estaVivo()) {
+            timer.stop();
+            frame.setVisible(false);
         }
         repaint();
     }
@@ -216,7 +239,7 @@ public class Juego extends JPanel implements ActionListener, KeyListener {
             public void mousePressed(MouseEvent e) {  
                 int x = e.getX();    
                 int y = e.getY();
-                metralleta.guardarBalas(player.getX(),player.getY(),player.getHeight(),player.getWidth(), x, y);
+                metralleta.guardarBalas((int)player.getX(),(int)player.getY(),player.getHeight(),player.getWidth(), x, y);
                 metralleta.reproducirDisparo();
                 startSending(x,y);
                 }
@@ -231,7 +254,7 @@ public class Juego extends JPanel implements ActionListener, KeyListener {
             timer2 = new Timer(200, new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
-                        metralleta.guardarBalas(player.getX(),player.getY(),player.getHeight(),player.getWidth(), x, y);
+                        metralleta.guardarBalas((int)player.getX(),(int)player.getY(),player.getHeight(),player.getWidth(), x, y);
                         metralleta.reproducirDisparo();
                 }
             });
@@ -302,7 +325,7 @@ public class Juego extends JPanel implements ActionListener, KeyListener {
             zombie.paint(g);
             zombie.paintBarraVida(g);
         }
-        if (boss != null) {
+        if (boss != null && boss.estaVivo())  {
             boss.paint(g);
             boss.paintBarraVida(g);
             for(int i = 0;i < boss.getMetralleta().getBalas().size();i++){
@@ -317,11 +340,12 @@ public class Juego extends JPanel implements ActionListener, KeyListener {
     public Zombie creacionZombie(Jugador player){
         Random ran = new Random();
         int intentos = 20;
+        Zombie zombie;
         while(intentos > 0)
         {
             int x = ran.nextInt(1000);
             int y = ran.nextInt(800);
-            Rectangle area = new Rectangle(player.getX() - 100,player.getY() - 100, 200 + player.getWidth(), 200 + player.getHeight());
+            Rectangle area = new Rectangle((int)player.getX() - 100,(int)player.getY() - 100, 200 + player.getWidth(), 200 + player.getHeight());
             Rectangle areaZombie = new Rectangle(x,y, 25, 36);
             if(!area.intersects(areaZombie)){
                 return new Zombie(x, y,500,20);
@@ -329,7 +353,7 @@ public class Juego extends JPanel implements ActionListener, KeyListener {
             intentos--;
         }
         return new Zombie(player.getX() - 100,player.getY() -175,500,20);
-    }
+    }   
 
     /*
     @Override
