@@ -1,12 +1,11 @@
 package Juego.Personaje;
-import java.awt.*;
 
-import Juego.Armas.Arma;
+import java.awt.*;
 import Juego.Sonidos.Sonidos;
 
 public class Jugador extends Personaje {
 
-    private int lado = 1,aux;
+    private int lado = 1,aux, zombiesEliminados = 1;
     private boolean inmunidad = false;
     private Sonidos sonido = new Sonidos();
 
@@ -20,7 +19,6 @@ public class Jugador extends Personaje {
     }
     
     public void follow(Graphics g) {
-        //g.fillRect(x, y, width, height);
         if (lado == 1) {
             paintJugadorIzquierda(g);
         }else if(lado == 2) {
@@ -28,9 +26,9 @@ public class Jugador extends Personaje {
         }
     }
     
-        public void reproducirDaño(){
-            sonido.reproducirGolpe();
-        }
+    public void reproducirDaño(){
+        sonido.reproducirGolpe();
+    }
 
     public void setAux(int aux) {
         this.aux = aux;
@@ -49,13 +47,6 @@ public class Jugador extends Personaje {
     }
     public int getLado(){
         return lado;
-    }
-    public void paintBarraVida(Graphics g){
-        g.setColor(new Color(0,0,0));
-        g.fillRect(x , y - 20, 25, 8);
-        g.setColor(new Color(255,0,0));
-        g.fillRect(x + 2, y - 18, (int)(salud/10),4);
-        
     }
 
     public void paintJugador(Graphics g){
@@ -178,4 +169,11 @@ public class Jugador extends Personaje {
         return inmunidad;
     }
 
+    public void zombieMuerto(){
+        zombiesEliminados += 1;
+    }
+
+    public int getZombiesEliminados(){
+        return zombiesEliminados;
+    }
 }

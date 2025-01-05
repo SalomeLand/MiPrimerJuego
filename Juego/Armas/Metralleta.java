@@ -1,6 +1,7 @@
 package Juego.Armas;
 
 import java.awt.*;
+import java.util.ArrayList;
 
 import Juego.Personaje.Jugador;
 import Juego.Sonidos.Sonidos;
@@ -8,6 +9,7 @@ import Juego.Sonidos.Sonidos;
 public class Metralleta extends Arma {
 
     private Sonidos sonido = new Sonidos();
+    private ArrayList<Bala> balas = new ArrayList<>();
 
     public Metralleta(int velocidad,int daño, int width, int height,int x, int y){
         super(velocidad, daño,width,height,x,y);
@@ -19,6 +21,32 @@ public class Metralleta extends Arma {
         if(lado == 1) paintArmaIzquierda(g);
     }
 
+    public void guardarBalas(int posX,int posY,int alto,int ancho,int x, int y){
+        if(x > posX + ancho/2){
+            balas.add(new Bala(posX + 30, posY + alto/2 + 4,2,x,y));
+            lado = 2;
+        }
+        else{
+            balas.add(new Bala(posX - 10, posY + alto/2 + 4,1,x,y));
+            lado = 1;
+        }
+    }
+    public void disparar(int limite){
+        for(int i = 0;i < balas.size();i++){
+            balas.get(i).movimientoBala(velocidad);
+            if (balas.get(i).getX() >= limite) {
+                balas.remove(i);
+                break;
+            }
+        }
+    }
+
+    public boolean acertarDisparo(Rectangle hitbox,Bala bala){
+        if (bala.getHitboxBala().intersects(hitbox)) {
+            return true;
+        }else return false;
+    }
+
     public void reproducirDisparo(){
         sonido.reproducirDisparo();
     }
@@ -27,6 +55,15 @@ public class Metralleta extends Arma {
         y = player.getY() + player.getHeight() / 2 + 1;
         x = player.getX() + 6;
     }
+
+    public ArrayList<Bala> getBalas(){
+        return balas;
+    }
+
+    public void setBalas(ArrayList<Bala> balas){
+        this.balas = balas;
+    }
+
 
     public void paintArma(Graphics g){
         g.setColor(Color.black);

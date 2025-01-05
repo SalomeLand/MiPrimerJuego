@@ -7,8 +7,8 @@ import Juego.Personaje.Jugador;
 public class Bala {
 
     private int ladoDisparo;
-    private double x,puntoX;
-    private double y,puntoY;
+    private double x,x2,puntoX;
+    private double y,y2,puntoY;
 
     public Bala(double x, double y, int ladoDisparo,int puntoX,int puntoY){
         this.x = x;
@@ -16,12 +16,14 @@ public class Bala {
         this.ladoDisparo = ladoDisparo;
         this.puntoX = puntoX;
         this.puntoY = puntoY;
+        this.x2 = x;
+        this.y2 = y;
     }
 
 
-    public void bala(Jugador player,int movimiento){
-        double dx = puntoX - player.getX(); // Diferencia en X
-        double dy = puntoY - player.getY(); // Diferencia en Y
+    public void bala(int movimiento){
+        double dx = puntoX - x; // Diferencia en X
+        double dy = puntoY - y; // Diferencia en Y
 
         // Calcular la magnitud del vector
         double magnitude = Math.sqrt(dx * dx + dy * dy);
@@ -31,15 +33,13 @@ public class Bala {
         double directionY = dy / magnitude;
 
         // Incrementar la posición de la bala
-        x += directionX * movimiento; // Movimiento en X
-        if (puntoY>300) {
-            y += directionY * movimiento - 1;
-        }else y+= directionY * movimiento - 2;
+        x2 += directionX * movimiento; // Movimiento en X
+        y2 += directionY * movimiento ;
     }
 
-    public void bala2(Jugador player,int movimiento){
-        double dx = puntoX - player.getX(); // Diferencia en X
-        double dy = puntoY - player.getY(); // Diferencia en Y
+    public void bala2(int movimiento){
+        double dx = puntoX - x; // Diferencia en X
+        double dy = puntoY - y; // Diferencia en Y
 
         // Calcular la magnitud del vector
         double magnitude = Math.sqrt(dx * dx + dy * dy);
@@ -49,19 +49,17 @@ public class Bala {
         double directionY = dy / magnitude;
 
         // Incrementar la posición de la bala
-        x += directionX * movimiento; // Movimiento en X
-        if (puntoY>300) {
-            y += directionY * movimiento - 1;
-        }else y+= directionY * movimiento -2 ;
+        x2 += directionX * movimiento; // Movimiento en X
+        y2 += directionY * movimiento ;
     }
 
-    public void movimientoBala(int movimiento,Jugador player){
+    public void movimientoBala(int movimiento){
         switch (ladoDisparo) {
-            case 1:
-                bala(player,movimiento);
-                break;
             case 2:
-                bala2(player,movimiento);
+                bala(movimiento);
+                break;
+            case 1:
+                bala2(movimiento);
                 break;
             default:
                 break;
@@ -77,7 +75,7 @@ public class Bala {
     }
 
     public Rectangle getHitboxBala(){
-        return new Rectangle((int)x,(int) y, 6,3);
+        return new Rectangle((int)x2,(int) y2, 6,3);
     }
 
     public void paintBala(Graphics g){
@@ -88,55 +86,55 @@ public class Bala {
     }
 
     public void paintBalaDerecha(Graphics g){
-        int x = (int) this.getX();
-        int y = (int) this.getY();
+        int x2 = (int) this.getX();
+        int y2 = (int) this.getY();
         g.setColor(Color.black);
-        g.fillRect(x, y, 5,3);
-        g.fillRect(x + 5, y + 1, 1, 1);
+        g.fillRect(x2, y2, 5,3);
+        g.fillRect(x2 + 5, y2 + 1, 1, 1);
         g.setColor(Color.ORANGE);
-        g.fillRect(x+1, y+1, 4, 1);
+        g.fillRect(x2+1, y2+1, 4, 1);
     }
     public void paintBalaIzquierdaArriba(Graphics g){
-        int x = (int) this.getX();
-        int y = (int) this.getY();
+        int x2 = (int) this.getX();
+        int y2 = (int) this.getY();
         g.setColor(Color.black);
-        g.fillRect(x, y, 2,1);
-        g.fillRect(x, y + 1, 1, 1);
-        g.fillRect(x + 2, y + 1, 1, 1);
-        g.fillRect(x + 2, y + 3, 1, 1);
-        g.fillRect(x + 2, y + 3, 1, 1);
-        g.fillRect(x + 3, y + 4, 1, 1);
-        g.fillRect(x + 3, y + 2, 1, 1);
-        g.fillRect(x + 4, y + 3, 1, 1);
+        g.fillRect(x2, y2, 2,1);
+        g.fillRect(x2, y2 + 1, 1, 1);
+        g.fillRect(x2 + 2, y2 + 1, 1, 1);
+        g.fillRect(x2 + 2, y2 + 3, 1, 1);
+        g.fillRect(x2 + 2, y2 + 3, 1, 1);
+        g.fillRect(x2 + 3, y2 + 4, 1, 1);
+        g.fillRect(x2 + 3, y2 + 2, 1, 1);
+        g.fillRect(x2 + 4, y2 + 3, 1, 1);
         g.setColor(Color.ORANGE);
-        g.fillRect(x+1, y+1, 1, 1);
-        g.fillRect(x+2, y+2, 1, 1);
-        g.fillRect(x+3, y+3, 1, 1);
+        g.fillRect(x2+1, y2+1, 1, 1);
+        g.fillRect(x2+2, y2+2, 1, 1);
+        g.fillRect(x2+3, y2+3, 1, 1);
     }
     public void paintBalaIzquierda(Graphics g){
-        int x = (int) this.getX();
-        int y = (int) this.getY();
+        int x2 = (int) this.getX();
+        int y2 = (int) this.getY();
         g.setColor(Color.black);
-        g.fillRect(x + 1,  y, 5,3);
-        g.fillRect(x - 5 + 6 - 1, y + 1, 1, 1);
+        g.fillRect(x2 + 1,  y2, 5,3);
+        g.fillRect(x2 - 5 + 6 - 1, y2 + 1, 1, 1);
         g.setColor(Color.ORANGE);
-        g.fillRect(x - 1 + 6 - 4, y+1, 4, 1);
+        g.fillRect(x2 - 1 + 6 - 4, y2+1, 4, 1);
     }
 
     public double getX() {
-        return x;
+        return x2;
     }
 
     public double getY() {
-        return y;
+        return y2;
     }
 
-    public void setX(int x) {
-        this.x = x;
+    public void setX(int x2) {
+        this.x2 = x2;
     }
 
-    public void setY(int y) {
-        this.y = y;
+    public void setY(int y2) {
+        this.y2 = y2;
     }
     
 }

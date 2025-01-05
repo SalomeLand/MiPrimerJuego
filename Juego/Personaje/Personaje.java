@@ -8,6 +8,7 @@ public class Personaje {
     protected int width;
     protected int height;
     protected int salud;
+    private double vidaActual;
     private int contador = 10;
 
 
@@ -17,8 +18,16 @@ public class Personaje {
         this.width = width;
         this.height = height;
         this.salud = salud;
+        vidaActual = salud;
     }
 
+    public void paintBarraVida(Graphics g){
+        int anchoVida = (int) ((width-4) * (vidaActual/salud));
+        g.setColor(Color.black);
+        g.fillRect(x, y-20, width, 8);
+        g.setColor(Color.red);
+        g.fillRect(x + 2, y - 18, anchoVida,4);
+    }
     
     public Rectangle getBounds() {
         return new Rectangle(x, y, width+1, height+1);
@@ -69,13 +78,13 @@ public class Personaje {
     }
 
 
-    public int getSalud() {
-        return salud;
+    public double getSalud() {
+        return vidaActual;
     }
 
 
-    public void setSalud(int salud) {
-        this.salud = salud;
+    public void setSalud(double salud) {
+        this.vidaActual = salud;
     }
 
 

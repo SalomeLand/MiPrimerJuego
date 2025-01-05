@@ -20,6 +20,7 @@ import Juego.Armas.Bala;
 import Juego.Armas.Espada;
 import Juego.Armas.Metralleta;
 import Juego.Escenarios.TerrenoInicial;
+import Juego.Personaje.BossUno;
 import Juego.Personaje.Jugador;
 import Juego.Personaje.Zombie;
 
@@ -28,14 +29,14 @@ public class Juego extends JPanel implements ActionListener, KeyListener {
     private Jugador player;
     private TerrenoInicial terreno;
     private ArrayList<Zombie> zombies;
-    private ArrayList<Bala> balas;
     private Metralleta metralleta;
     private Espada espada;
     private Timer timer,timer2;
     private Timer timeEspada,timeArma;
-    private int cantidadZombie = 10, seleccion;
+    private int cantidadZombie = 3, seleccion;
     private JFrame frame;
     long lastMoveTime = 0;    
+    private BossUno boss;
 
 
     public Juego(int seleccion) {
@@ -45,7 +46,6 @@ public class Juego extends JPanel implements ActionListener, KeyListener {
 
         player = new Jugador(300, 300,200);
         zombies = new ArrayList<>();
-        balas = new ArrayList<>();
         metralleta = new Metralleta(20, 100, 37, 14, player.getX() + 25, player.getY() + player.getHeight()/4);
         espada = new Espada(20, 10, 25, 15, 20, player.getY() + player.getHeight()/4);
         terreno = new TerrenoInicial();
@@ -73,12 +73,12 @@ public class Juego extends JPanel implements ActionListener, KeyListener {
             @Override
             public void actionPerformed(ActionEvent e) {
                 boolean bandera = false;
-                Iterator<Bala> balaIterator = balas.iterator(); // Iterator para balas
+                Iterator<Bala> balaIterator = metralleta.getBalas().iterator(); // Iterator para balas
                 Iterator<Zombie> zombieIterator = zombies.iterator(); // Iterator para zombies
-                
+
                 while (balaIterator.hasNext()) {
                     Bala bala = balaIterator.next();
-                    bala.movimientoBala(metralleta.getVelocidad(),player);
+                    bala.movimientoBala(metralleta.getVelocidad());
                     if (bala.getX() > player.getX() + 600) {
                         balaIterator.remove(); // Eliminar la bala
                         break;
@@ -91,6 +91,7 @@ public class Juego extends JPanel implements ActionListener, KeyListener {
                             if (bala.getHitboxBala().intersects(zombie.getBounds())) {
                                 if (zombie.getSalud() <= 0) {
                                     zombieIterator.remove(); // Eliminar el zombie
+                                    player.zombieMuerto();
                                 }else {
                                     zombie.setSalud(zombie.getSalud() - metralleta.getDaño());
                                 }
@@ -175,6 +176,14 @@ public class Juego extends JPanel implements ActionListener, KeyListener {
         if (player.getInmunidad()) {
             player.setContador(player.getContador() + 1);
         }
+        if (player.getZombiesEliminados()%9 == 0) {
+            boss = new BossUno(20, 20, 50, 40, 300);
+            cantidadZombie = 0;
+        }
+        if (boss != null) {
+            boss.follow(player);
+            boss.getMetralleta().disparar(boss.getX()+500);
+        }
         repaint();
     }
     public void espada(){
@@ -207,16 +216,7 @@ public class Juego extends JPanel implements ActionListener, KeyListener {
             public void mousePressed(MouseEvent e) {  
                 int x = e.getX();    
                 int y = e.getY();
-                if (x > player.getX() + player.getWidth()/2) {
-                    Bala bala = new Bala(player.getX() + 30, player.getY() + player.getHeight()/2 + 4,1,x,y);
-                    metralleta.setLado(2);
-                    balas.add(bala);
-                }else {
-                    Bala bala = new Bala(player.getX() - 10, player.getY() + player.getHeight()/ 2 + 4,2,x,y);
-                    metralleta.setLado(1);
-                    balas.add(bala);
-                }
-                metralleta.setDisparo(true);
+                metralleta.guardarBalas(player.getX(),player.getY(),player.getHeight(),player.getWidth(), x, y);
                 metralleta.reproducirDisparo();
                 startSending(x,y);
                 }
@@ -228,20 +228,11 @@ public class Juego extends JPanel implements ActionListener, KeyListener {
     }
     private void startSending(int x, int y) {
         if (timer2 == null) {
-            timer2 = new Timer(150, new ActionListener() {
+            timer2 = new Timer(200, new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
-                    if(x > player.getX() + player.getWidth()/2){
-                        Bala bala = new Bala(player.getX() + 30 , player.getY() + player.getHeight()/2 + 4,1,x,y);
-                        metralleta.setLado(2);
-                        balas.add(bala);
-                    }else{
-                        Bala bala = new Bala(player.getX() - 10, player.getY() + player.getHeight()/2 + 4,2,x,y);
-                        metralleta.setLado(1);
-                        balas.add(bala);
-
-                    }
-                    metralleta.reproducirDisparo();
+                        metralleta.guardarBalas(player.getX(),player.getY(),player.getHeight(),player.getWidth(), x, y);
+                        metralleta.reproducirDisparo();
                 }
             });
             timer2.start();
@@ -292,9 +283,12 @@ public class Juego extends JPanel implements ActionListener, KeyListener {
         player.paintBarraVida(g);
         
         if(seleccion == 2){
-            for(Bala bala : balas){
+            /*for(Bala bala : balas){
                 bala.paintBala(g);
-            }
+            }*/
+            for(int i = 0;i < metralleta.getBalas().size();i++)
+                metralleta.getBalas().get(i).paintBala(g);
+
             player.setLado(metralleta.getLado());
             player.follow(g);
             metralleta.disparo(g);
@@ -307,6 +301,13 @@ public class Juego extends JPanel implements ActionListener, KeyListener {
         for (Zombie zombie : zombies) {
             zombie.paint(g);
             zombie.paintBarraVida(g);
+        }
+        if (boss != null) {
+            boss.paint(g);
+            boss.paintBarraVida(g);
+            for(int i = 0;i < boss.getMetralleta().getBalas().size();i++){
+                boss.getMetralleta().getBalas().get(i).paintBala(g);
+            }
         }
         player.pintarMano(g);
         //terreno.paintArbol(g);
