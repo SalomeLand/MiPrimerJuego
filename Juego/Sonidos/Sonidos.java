@@ -30,9 +30,6 @@ public class Sonidos {
             FloatControl gainControl = (FloatControl) clip.getControl(FloatControl.Type.MASTER_GAIN);
             // Establecer el volumen (por ejemplo, -10.0f reduce el volumen, 0.0f es el volumen máximo)
             gainControl.setValue(-15.0f); 
-
-            // Cargar el audio en el clip
-
             clip.start();
 
         } catch (UnsupportedAudioFileException | IOException | LineUnavailableException  e) {

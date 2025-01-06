@@ -29,9 +29,6 @@ public class Jugador extends Personaje {
         }
     }
     
-    public void reproducirDaño(){
-        sonido.reproducirGolpe();
-    }
 
     public void setAux(int aux) {
         this.aux = aux;

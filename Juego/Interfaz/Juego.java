@@ -2,6 +2,7 @@ package Juego.Interfaz;
 
 import java.awt.*;
 import java.awt.event.*;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -15,11 +16,14 @@ import javax.sound.sampled.FloatControl;
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.UnsupportedAudioFileException;
 import javax.swing.*;
+import javax.swing.border.Border;
 
 import Juego.Armas.Bala;
 import Juego.Armas.Espada;
 import Juego.Armas.Metralleta;
 import Juego.Escenarios.TerrenoInicial;
+import Juego.Modificaciones.Boton;
+import Juego.Modificaciones.BotonSetting;
 import Juego.Personaje.BossUno;
 import Juego.Personaje.Jugador;
 import Juego.Personaje.Zombie;
@@ -27,22 +31,28 @@ import Juego.Personaje.Zombie;
 public class Juego extends JPanel implements ActionListener, KeyListener {
 
     private Jugador player;
+    private BufferedImage buffer;
+    private Graphics2D bufferGraphics;
     private TerrenoInicial terreno;
     private ArrayList<Zombie> zombies;
     private Metralleta metralleta;
     private Espada espada;
     private Timer timer,timer2;
     private Timer timeEspada,timeArma, timeCrearZombies;
+    private ArrayList<Timer> todosTimers = new ArrayList<>();
     private int cantidadZombie = 3, seleccion;
     private JFrame frame;
     long lastMoveTime = 0;    
     private BossUno boss;
+    private BotonSetting btnSetting;
+    private JPanel panelSetting;
 
 
     public Juego(int seleccion) {
         this.seleccion = seleccion;
         setPreferredSize(new Dimension(800, 600));
         setBackground(Color.DARK_GRAY);
+        setLayout(null);
 
         player = new Jugador(300, 300,200);
         zombies = new ArrayList<>();
@@ -69,6 +79,7 @@ public class Juego extends JPanel implements ActionListener, KeyListener {
                 repaint();
             }
         });
+            todosTimers.add(timeEspada);
         timeCrearZombies = new Timer(350,new ActionListener() {
             public void actionPerformed(ActionEvent e){
                 zombies.add(creacionZombie(player));
@@ -123,6 +134,7 @@ public class Juego extends JPanel implements ActionListener, KeyListener {
                 repaint();
             }
         });
+        todosTimers.add(timeArma);
         switch (seleccion) {
             case 1:
                 timeEspada.start();
@@ -144,10 +156,13 @@ public class Juego extends JPanel implements ActionListener, KeyListener {
             }});
         timerSonidoZombi.start();
         timer =  new Timer(16, this);
+        todosTimers.add(timer);
         timer.start();
         
         addKeyListener(this);
         setFocusable(true);
+        requestFocusInWindow();
+        componentes();
         frame = new JFrame();
         frame.setSize(800, 600);
         // Opcional: Ocultar la barra de título para una experiencia más inmersiva
@@ -189,7 +204,7 @@ public class Juego extends JPanel implements ActionListener, KeyListener {
             player.setContador(player.getContador() + 1);
         }
         if (player.getZombiesEliminados()%9 == 0 && boss == null) {
-            boss = new BossUno(20, 20, 50, 40, 250);
+            boss = new BossUno(20, 20, 60, 40, 2500);
             cantidadZombie = 0;
         }
         if (boss != null && boss.estaVivo()) {
@@ -205,7 +220,7 @@ public class Juego extends JPanel implements ActionListener, KeyListener {
         }else cantidadZombie = 10;
         if (!player.estaVivo()) {
             timer.stop();
-            frame.setVisible(false);
+            //frame.setVisible(false);
         }
         repaint();
     }
@@ -258,6 +273,7 @@ public class Juego extends JPanel implements ActionListener, KeyListener {
                         metralleta.reproducirDisparo();
                 }
             });
+            todosTimers.add(timer2);
             timer2.start();
         }
     }
@@ -302,39 +318,55 @@ public class Juego extends JPanel implements ActionListener, KeyListener {
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
-        terreno.paintComponent(g);
-        player.paintBarraVida(g);
-        
-        if(seleccion == 2){
-            /*for(Bala bala : balas){
-                bala.paintBala(g);
-            }*/
-            for(int i = 0;i < metralleta.getBalas().size();i++)
-                metralleta.getBalas().get(i).paintBala(g);
+
+        // 1. Inicializar el buffer si es necesario
+        if (buffer == null || buffer.getWidth() != getWidth() || buffer.getHeight() != getHeight()) {
+            buffer = new BufferedImage(getWidth(), getHeight(), BufferedImage.TYPE_INT_ARGB);
+            bufferGraphics = buffer.createGraphics();
+        }
+
+        // 2. Limpiar el buffer
+        bufferGraphics.setColor(getBackground());
+        bufferGraphics.fillRect(0, 0, getWidth(), getHeight());
+
+        // 3. Dibujar en el buffer
+        terreno.paintComponent(bufferGraphics);
+        player.paintBarraVida(bufferGraphics);
+
+        if (seleccion == 2) {
+            for (int i = 0; i < metralleta.getBalas().size(); i++) {
+                metralleta.getBalas().get(i).paintBala(bufferGraphics);
+            }
 
             player.setLado(metralleta.getLado());
-            player.follow(g);
-            metralleta.disparo(g);
-        }else if(seleccion == 1){
+            player.follow(bufferGraphics);
+            metralleta.disparo(bufferGraphics);
+        } else if (seleccion == 1) {
             player.setLado(espada.getLado());
-            player.follow(g);
-            espada.atacar(g);
+            player.follow(bufferGraphics);
+            espada.atacar(bufferGraphics);
         }
+
         // Dibujar zombies
         for (Zombie zombie : zombies) {
-            zombie.paint(g);
-            zombie.paintBarraVida(g);
+            zombie.paint(bufferGraphics);
+            zombie.paintBarraVida(bufferGraphics);
         }
-        if (boss != null && boss.estaVivo())  {
-            boss.paint(g);
-            boss.paintBarraVida(g);
-            for(int i = 0;i < boss.getMetralleta().getBalas().size();i++){
-                boss.getMetralleta().getBalas().get(i).paintBala(g);
+
+        if (boss != null && boss.estaVivo()) {
+            boss.paint(bufferGraphics);
+            boss.paintBarraVida(bufferGraphics);
+            for (int i = 0; i < boss.getMetralleta().getBalas().size(); i++) {
+                boss.getMetralleta().getBalas().get(i).paintBala(bufferGraphics);
             }
         }
-        player.pintarMano(g);
-        //terreno.paintArbol(g);
-        //terreno.paintPiedra(g);
+
+        player.pintarMano(bufferGraphics);
+        // terreno.paintArbol(bufferGraphics);
+        // terreno.paintPiedra(bufferGraphics);
+
+        // 4. Dibujar el buffer en pantalla
+        g.drawImage(buffer, 0, 0, null);
     }
 
     public Zombie creacionZombie(Jugador player){
@@ -401,21 +433,17 @@ public class Juego extends JPanel implements ActionListener, KeyListener {
 
     public static void reproducirZombie(){
         try {
-            // Cargar el archivo de audio
+
             File archivoAudio = new File("sonidoZombi.wav");
 
-            // Crear un flujo de audio
             AudioInputStream audioStream = AudioSystem.getAudioInputStream(archivoAudio);
 
-            // Obtener un clip de audio
             Clip clip = AudioSystem.getClip();
             clip.open(audioStream);
 
             FloatControl gainControl = (FloatControl) clip.getControl(FloatControl.Type.MASTER_GAIN);
             // Establecer el volumen (por ejemplo, -10.0f reduce el volumen, 0.0f es el volumen máximo)
             gainControl.setValue(-20.0f); 
-
-            // Cargar el audio en el clip
 
             clip.start();
 
@@ -424,4 +452,42 @@ public class Juego extends JPanel implements ActionListener, KeyListener {
         }
     }
 
+    public void componentes(){
+        btnSetting = new BotonSetting();
+        btnSetting.setBounds(10, 10, 30, 30);
+        add(btnSetting);
+        btnSetting.addActionListener(e->{
+            panelSetting();
+            add(panelSetting);
+        });
+    }
+
+    public void panelSetting(){
+        panelSetting = new JPanel();
+        panelSetting.setBackground(Color.orange);
+        panelSetting.setBounds(200,200,400,200);
+        panelSetting.setFocusable(false);
+        panelSetting.setVisible(true);
+
+        Boton btnMenu = new Boton("Ir al menu");
+        btnMenu.setBounds(50,100,150,50);
+        panelSetting.add(btnMenu);
+        btnMenu.addActionListener(e->{
+            new Inicio();
+            frame.dispose();
+            for (Timer timer : todosTimers) {
+                if (timer.isRunning()) {
+                    timer.stop();  // Detener cada Timer
+                }
+            }
+        });
+
+        Boton btnRegreso = new Boton("Regresar");
+        btnRegreso.setBounds(200, 125, 150, 50);
+        panelSetting.add(btnRegreso);
+        btnRegreso.addActionListener(e->{
+            remove(panelSetting);
+        });
+
+    }
 }

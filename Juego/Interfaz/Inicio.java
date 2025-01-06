@@ -27,9 +27,11 @@ public class Inicio extends JFrame{
     public void listener(){
         btnEspada.addActionListener(e->{
             new Juego(1);
+            setVisible(false);
         });
         btnArma.addActionListener(e->{
             new Juego(2);
+            setVisible(false);
         });
     }
 

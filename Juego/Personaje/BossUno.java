@@ -12,6 +12,7 @@ public class BossUno extends Personaje{
     private int contador=0;
     private Metralleta metralleta = new Metralleta(5, 30, 37, 14,(int) x,(int)y + height/4);
     Timer time;
+    private boolean eliminado = false;
     
     public BossUno(int x, int y,int width, int height, int salud){
         super(x, y, width, height, salud);
@@ -42,10 +43,15 @@ public class BossUno extends Personaje{
     public void recibirDaño(double daño) {
         if (vidaActual <= 0) {
             estaVivo = false;
+            eliminado = true;
         }else{
             this.vidaActual -= daño;
             contador = 0;
         }
+    }
+
+    public boolean estaEliminado(){
+        return eliminado;
     }
 
     public Metralleta getMetralleta(){
