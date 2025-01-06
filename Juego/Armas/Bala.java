@@ -81,8 +81,8 @@ public class Bala {
     public void paintBala(Graphics g){
         if (puntoY < 300 ) {
             paintBalaIzquierdaArriba(g);
-        }else if(ladoDisparo == 1) paintBalaDerecha(g);
-        else if(ladoDisparo == 2) paintBalaIzquierda(g);
+        }else if(ladoDisparo == 2) paintBalaDerecha(g);
+        else if(ladoDisparo == 1) paintBalaIzquierda(g);
     }
 
     public void paintBalaDerecha(Graphics g){
