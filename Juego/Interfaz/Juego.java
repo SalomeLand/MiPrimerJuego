@@ -21,6 +21,7 @@ import javax.swing.border.Border;
 import Juego.Armas.Bala;
 import Juego.Armas.Espada;
 import Juego.Armas.Metralleta;
+import Juego.Conexion.BdJugador.ConexionJugador;
 import Juego.Escenarios.TerrenoInicial;
 import Juego.Modificaciones.Boton;
 import Juego.Modificaciones.BotonSetting;
@@ -37,10 +38,10 @@ public class Juego extends JPanel implements  KeyListener {
     private ArrayList<Zombie> zombies;
     private Metralleta metralleta;
     private Espada espada;
-    private Timer timer,timer2,timerMaestro;
-    private Timer timeEspada,timeArma, timeCrearZombies;
+    private Timer timer2,timerMaestro;
+    private Timer timeEspada, timeCrearZombies;
     private ArrayList<Timer> todosTimers = new ArrayList<>();
-    private int cantidadZombie = 3, seleccion;
+    private int cantidadZombie = 3;
     private JFrame frame;
     long lastMoveTime = 0;    
     private BossUno boss;
@@ -49,15 +50,15 @@ public class Juego extends JPanel implements  KeyListener {
 
 
     public Juego(int seleccion) {
-        this.seleccion = seleccion;
         setPreferredSize(new Dimension(800, 600));
         setBackground(Color.DARK_GRAY);
         setLayout(null);
 
         player = new Jugador(300, 300,200);
         zombies = new ArrayList<>();
-        metralleta = new Metralleta(20, 100, 37, 14, (int)player.getX() + 25, (int)player.getY() + player.getHeight()/4);
-        espada = new Espada(20, 10, 25, 15, 20, (int)player.getY() + player.getHeight()/4);
+        ConexionJugador.traerMetralleta();
+        metralleta = new Metralleta(ConexionJugador.velocidadMetralleta, ConexionJugador.dañoMetralleta, 37, 14, (int)player.getX() + 25, (int)player.getY() + player.getHeight()/4);
+        espada = new Espada(20,30, 25, 15, 20, (int)player.getY() + player.getHeight()/4);
         terreno = new TerrenoInicial();
         timeEspada = new Timer(16, new ActionListener() {
             @Override

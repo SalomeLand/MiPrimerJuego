@@ -17,6 +17,7 @@ import javax.swing.*;
 
 import com.microsoft.sqlserver.jdbc.SQLServerException;
 
+import Juego.Conexion.BdJugador.ConexionJugador;
 import Juego.Conexion.ConexionBD.Conexion;
 import Juego.Interfaz.Inicio;
 import Juego.Modificaciones.Boton;
@@ -31,6 +32,7 @@ public class InicioSesion  extends JFrame{
     public InicioSesion(){
         panel = new JPanel();
         panel.setLayout(null);
+        panel.setBackground(Color.orange);
         setSize(500, 300);
 
 
@@ -49,10 +51,13 @@ public class InicioSesion  extends JFrame{
                 Conexion.usuario = cajaUsuario.getText();
                 Conexion.contraseña = cajaContraseña.getText();
                 try{
-                    CallableStatement procedimiento = Conexion.getConexion().prepareCall("{call sp_existeUsuario(?,?)}");
+                    CallableStatement procedimiento = Conexion.getConexion().prepareCall("{call sp_existeUsuario(?,?,?)}");
                     procedimiento.setString(1, cajaUsuario.getText());
                     procedimiento.setString(2, cajaContraseña.getText());
+                    procedimiento.registerOutParameter(3, java.sql.Types.INTEGER);
                     procedimiento.execute();
+                    int jugadorID = procedimiento.getInt(3);
+                    ConexionJugador.jugadorID = jugadorID;
                     new Inicio();
                     dispose();
                 }catch(SQLServerException ex){
