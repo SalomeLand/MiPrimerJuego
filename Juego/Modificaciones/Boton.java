@@ -9,13 +9,13 @@ import java.io.IOException;
 
 public class Boton extends JButton {
     
-    public Boton(String texto){
+    public Boton(String texto, float tamaño){
         super(texto);
         setForeground(Color.white);
         try {
             // Asegúrate de que la ruta sea correcta según la ubicación de tu archivo .ttf
             Font customFont = Font.createFont(Font.TRUETYPE_FONT, new File("PressStart2P-Regular.ttf"))
-                                .deriveFont(10f); // Tamaño de la fuente
+                                .deriveFont(tamaño); // Tamaño de la fuente
             setFont(customFont); // Establecer la fuente en el botón
         } catch (FontFormatException | IOException e) {
             e.printStackTrace();

@@ -36,16 +36,16 @@ public class Inicio extends JFrame{
     }
 
     public void componentes(){
-        btnEspada = new Boton("Espada");
+        btnEspada = new Boton("Espada",10f);
         btnEspada.setBounds(50,20,150,50);
         panel.add(btnEspada);
 
-        btnArma =  new Boton("Metralleta");
+        btnArma =  new Boton("Metralleta",10);
         btnArma.setBounds(50, 80, 150, 50);
         panel.add(btnArma);
     }
 
-    public static void main(String[] args) {
+    /*public static void main(String[] args) {
         new Inicio();
-    }
+    }-*/
 }

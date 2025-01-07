@@ -35,7 +35,7 @@ public class PasarNivel extends JPanel {
     }
 
     public void componentes(){
-        btnIrAlMenu = new Boton("Regresar");
+        btnIrAlMenu = new Boton("Regresar",10);
         btnIrAlMenu.setBounds(50,20,150,50);
         add(btnIrAlMenu);
     }

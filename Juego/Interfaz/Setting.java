@@ -26,11 +26,11 @@ public class Setting extends JPanel{
 
 
     public void componentes(){
-        btnMenu = new Boton("Ir al menu");
+        btnMenu = new Boton("Ir al menu",10);
         btnMenu.setBounds(50,100,150,50);
         add(btnMenu);
 
-        btnRegreso = new Boton("Regresar");
+        btnRegreso = new Boton("Regresar",10);
         btnRegreso.setBounds(200, 100, 150, 50);
         add(btnRegreso);
         btnRegreso.addActionListener(e->{

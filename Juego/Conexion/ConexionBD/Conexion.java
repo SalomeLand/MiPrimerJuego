@@ -14,7 +14,7 @@ public class Conexion {
     public static boolean estatus = false;
     
     public static Connection getConexion(){
-        String conexionUrl = "jdbc:sqlserver://DESKTOP-7U8H3M7\\SQL2022:1433;"
+        String conexionUrl = "jdbc:sqlserver://192.168.100.133\\SQL2022:1433;"
                 + "database=juegoZombie;"
                 + "user=sa;"
                 + "password=123;"

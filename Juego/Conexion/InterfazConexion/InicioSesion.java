@@ -18,6 +18,7 @@ import javax.swing.*;
 import com.microsoft.sqlserver.jdbc.SQLServerException;
 
 import Juego.Conexion.ConexionBD.Conexion;
+import Juego.Interfaz.Inicio;
 import Juego.Modificaciones.Boton;
 
 public class InicioSesion  extends JFrame{
@@ -52,7 +53,7 @@ public class InicioSesion  extends JFrame{
                     procedimiento.setString(1, cajaUsuario.getText());
                     procedimiento.setString(2, cajaContraseña.getText());
                     procedimiento.execute();
-
+                    new Inicio();
                     dispose();
                 }catch(SQLServerException ex){
                     System.out.println(ex.getMessage());
@@ -64,7 +65,8 @@ public class InicioSesion  extends JFrame{
 
         btnRegistro.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e){
-
+                new Registro();
+                dispose();
             }
         });
 
@@ -95,10 +97,10 @@ public class InicioSesion  extends JFrame{
 
         }
 
-        btnInicio = new Boton("Iniciar");
+        btnInicio = new Boton("Iniciar",11f);
         btnInicio.setBounds(80, 170, 150, 50);
 
-        btnRegistro = new Boton("Registrarse");
+        btnRegistro = new Boton("Registrarse",11f);
         btnRegistro.setBounds(250, 170, 150, 50);
         
         panel.add(btnRegistro);

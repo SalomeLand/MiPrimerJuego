@@ -496,7 +496,7 @@ public class Juego extends JPanel implements  KeyListener {
         panelSetting.setFocusable(false);
         panelSetting.setVisible(true);
 
-        Boton btnMenu = new Boton("Ir al menu");
+        Boton btnMenu = new Boton("Ir al menu",10);
         btnMenu.setBounds(50,125,150,50);
         panelSetting.add(btnMenu);
         btnMenu.addActionListener(e->{
@@ -509,7 +509,7 @@ public class Juego extends JPanel implements  KeyListener {
             }
         });
 
-        Boton btnRegreso = new Boton("Regresar");
+        Boton btnRegreso = new Boton("Regresar",10);
         btnRegreso.setBounds(200, 125, 150, 50);
         panelSetting.add(btnRegreso);
         btnRegreso.addActionListener(e->{
