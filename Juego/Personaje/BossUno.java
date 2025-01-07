@@ -19,20 +19,15 @@ public class BossUno extends Personaje{
     }
 
     public void follow(Jugador player){
-        if (contador > 10) {
             if (x > player.x + player.width - 5) x -= .3;
             if ((x + width) < player.x + 15) x += .3;
             if (y > player.y + player.height - 5) y -= .3;
             if ((y + height) < player.y + 15) y += .3;
-            if (contador >=50){
-                contador = 0;
-            }
             if(time == null) disparar(player);
-        }contador++;
     }
 
     public void disparar(Jugador player){
-        time = new Timer(1100, new ActionListener() {
+        time = new Timer(800, new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 metralleta.guardarBalas((int)x,(int)y,height,width, (int)player.getX(),(int) player.getY());
@@ -59,6 +54,7 @@ public class BossUno extends Personaje{
     }
 
     public void paint(Graphics g){
+        g.setColor(Color.red);
         g.fillRect((int)x,(int) y, width, height);
     }
 

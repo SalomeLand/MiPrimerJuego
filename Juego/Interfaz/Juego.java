@@ -41,7 +41,7 @@ public class Juego extends JPanel implements  KeyListener {
     private Timer timer2,timerMaestro;
     private Timer timeEspada, timeCrearZombies;
     private ArrayList<Timer> todosTimers = new ArrayList<>();
-    private int cantidadZombie = 3;
+    private int cantidadZombie = 5;
     private JFrame frame;
     long lastMoveTime = 0;    
     private BossUno boss;
@@ -57,7 +57,7 @@ public class Juego extends JPanel implements  KeyListener {
         player = new Jugador(300, 300,200);
         zombies = new ArrayList<>();
         ConexionJugador.traerMetralleta();
-        metralleta = new Metralleta(ConexionJugador.velocidadMetralleta, ConexionJugador.dañoMetralleta, 37, 14, (int)player.getX() + 25, (int)player.getY() + player.getHeight()/4);
+        metralleta = new Metralleta(ConexionJugador.velocidadMetralleta, /*ConexionJugador.dañoMetralleta*/1000, 37, 14, (int)player.getX() + 25, (int)player.getY() + player.getHeight()/4);
         espada = new Espada(20,30, 25, 15, 20, (int)player.getY() + player.getHeight()/4);
         terreno = new TerrenoInicial();
         timeEspada = new Timer(16, new ActionListener() {
@@ -184,8 +184,8 @@ public class Juego extends JPanel implements  KeyListener {
         if (player.getInmunidad()) {
             player.setContador(player.getContador() + 1);
         }
-        if (player.getZombiesEliminados()%9 == 0 && boss == null) {
-            boss = new BossUno(20, 20, 60, 40, 2500);
+        if (player.getZombiesEliminados()%15 == 0 && boss == null) {
+            boss = new BossUno(20, 20, 60, 40, 10000);
             cantidadZombie = 0;
         }
         if (boss != null && boss.estaVivo()) {
@@ -201,7 +201,9 @@ public class Juego extends JPanel implements  KeyListener {
                     break;
                 }
             }
-        }else cantidadZombie = 10;
+        }else if(boss != null && !boss.estaVivo()){
+            pasarNivelPanel();
+        }
         if (!player.estaVivo()) {
             timerMaestro.stop();
             //frame.setVisible(false);
@@ -517,5 +519,21 @@ public class Juego extends JPanel implements  KeyListener {
             remove(panelSetting);
         });
 
+    }
+    public void pasarNivelPanel(){
+        JPanel panel = new JPanel();
+        panel.setBounds(200, 200, 400, 200);
+        panel.setBackground(Color.orange);
+        Boton btnIrAlMenu = new Boton("Regresar",10);
+        btnIrAlMenu.setBounds(50,20,150,50);
+        
+                btnIrAlMenu.addActionListener(e ->{
+                    frame.dispose();
+                    new Inicio();
+                });
+
+        panel.add(btnIrAlMenu);
+        add(panel);
+        
     }
 }

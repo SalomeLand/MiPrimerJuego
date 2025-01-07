@@ -13,6 +13,7 @@ public class PasarNivel extends JPanel {
 
     public PasarNivel(){
         setLayout(null);
+        setSize(400,200);
         setBackground(Color.orange);
         componentes();
         listener();
@@ -21,11 +22,8 @@ public class PasarNivel extends JPanel {
         frame.add(this);
         frame.setUndecorated(true);
         frame.setLocationRelativeTo(null);
+        setVisible(true);
     }
-    public JFrame getJFrame(){
-        return frame;
-    }
-
     public void listener(){
         btnIrAlMenu.addActionListener(e ->{
             Inicio inicio = new Inicio();

@@ -37,7 +37,7 @@ public class MejorarMetralleta extends JFrame{
                     ConexionJugador.puntosJugador -= 1;
                     ConexionJugador.velocidadMetralleta += 2;
                 }
-                lblPuntos.setText(""+ConexionJugador.puntosJugador);
+                lblPuntos.setText("Puntos : "+ConexionJugador.puntosJugador);
             }
         };
         btnAumentarDaño.addActionListener(action);
