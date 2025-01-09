@@ -26,9 +26,8 @@ public class PasarNivel extends JPanel {
     }
     public void listener(){
         btnIrAlMenu.addActionListener(e ->{
-            Inicio inicio = new Inicio();
-            inicio.setVisible(true);
-            frame.setVisible(false);
+            new Inicio();
+            frame.dispose();
         });
     }
 

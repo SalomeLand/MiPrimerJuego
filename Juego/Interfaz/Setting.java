@@ -12,11 +12,6 @@ public class Setting extends JPanel{
     private Boton btnMenu,btnRegreso;
 
     public Setting(){
-       // panel = new JPanel();
-        //anel.setLayout(null);
-        //setSize(400,200);
-        //setUndecorated(true);
-        //setLocationRelativeTo(null);
         componentes();
         setBackground(Color.orange);
         setBounds(200,200,400,200);

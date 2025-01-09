@@ -43,11 +43,24 @@ public class ConexionJugador {
             sql.setInt(1, daño);
             sql.setInt(2, velocidad);
             sql.executeUpdate();
-            System.out.println("Exitoso");
 
             consulta = "update jugadores set puntos = ? where JugadorID = "+jugadorID;
             sql = con.prepareStatement(consulta);
             sql.setInt(1, puntos);
+            sql.executeUpdate();
+
+        }catch(SQLException e){
+            System.out.println(e.getMessage());
+        }
+    }
+
+    public static void actualizarJugador(int nivel,int puntos){
+        try{
+            String consulta = "update jugadores set nivel = ?,puntos = ? where jugadorID = ?";
+            PreparedStatement sql = con.prepareStatement(consulta);
+            sql.setInt(1,nivel);
+            sql.setInt(2,puntos);
+            sql.setInt(3,jugadorID);
             sql.executeUpdate();
 
         }catch(SQLException e){

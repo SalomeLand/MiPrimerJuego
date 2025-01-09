@@ -47,6 +47,7 @@ public class Juego extends JPanel implements  KeyListener {
     private BossUno boss;
     private BotonSetting btnSetting;
     private JPanel panelSetting;
+    private static Clip clip;
 
 
     public Juego(int seleccion) {
@@ -57,7 +58,7 @@ public class Juego extends JPanel implements  KeyListener {
         player = new Jugador(300, 300,200);
         zombies = new ArrayList<>();
         ConexionJugador.traerMetralleta();
-        metralleta = new Metralleta(ConexionJugador.velocidadMetralleta, /*ConexionJugador.dañoMetralleta*/1000, 37, 14, (int)player.getX() + 25, (int)player.getY() + player.getHeight()/4);
+        metralleta = new Metralleta(ConexionJugador.velocidadMetralleta, ConexionJugador.dañoMetralleta, 37, 14, (int)player.getX() + 25, (int)player.getY() + player.getHeight()/4);
         espada = new Espada(20,30, 25, 15, 20, (int)player.getY() + player.getHeight()/4);
         terreno = new TerrenoInicial();
         timeEspada = new Timer(16, new ActionListener() {
@@ -126,7 +127,6 @@ public class Juego extends JPanel implements  KeyListener {
                 reproducirZombie();
             }});
         timerSonidoZombi.start();
-        //timer.start();
         
         addKeyListener(this);
         setFocusable(true);
@@ -153,10 +153,9 @@ public class Juego extends JPanel implements  KeyListener {
         terreno.paintComponent(bufferGraphics);
         player.paintBarraVida(bufferGraphics);
 
-        if (zombies.size() < cantidadZombie) {
-            timeCrearZombies.start();
-            //zombies.add(creacionZombie(player));
-        }else timeCrearZombies.stop();
+        if (zombies.size() < cantidadZombie) timeCrearZombies.start();
+        else timeCrearZombies.stop();
+
         for (Zombie zombie : zombies) {
             zombie.follow(player);
             Rectangle hitboxJugador = player.getBounds();
@@ -165,13 +164,6 @@ public class Juego extends JPanel implements  KeyListener {
                     if (!player.getInmunidad()) {
                         System.out.println("golpe");
                         player.recibirDaño(zombie.getDaño());
-                        /*if(player.getSalud() <= 0){
-                            JOptionPane.showMessageDialog(this, "Has muerto");
-                            timer.stop();
-                            frame.setVisible(false);
-                        }else player.setSalud(zombie.getDaño());
-                        player.setInmunidad(true);
-                        player.setContador(0);*/
                     }else if(player.getContador() >= 30) {
                         player.setInmunidad(false);
                     }
@@ -188,26 +180,12 @@ public class Juego extends JPanel implements  KeyListener {
             boss = new BossUno(20, 20, 60, 40, 10000);
             cantidadZombie = 0;
         }
-        if (boss != null && boss.estaVivo()) {
-            boss.follow(player);
-            boss.getMetralleta().disparar((int)boss.getX()+500);
-            boss.paint(bufferGraphics);
-            boss.paintBarraVida(bufferGraphics);
-            for(int i =0;i < boss.getMetralleta().getBalas().size();i++){
-                boss.getMetralleta().getBalas().get(i).paintBala(bufferGraphics);
-                if (boss.getMetralleta().acertarDisparo(player.getBounds(),boss.getMetralleta().getBalas().get(i))) {
-                    player.recibirDaño(boss.getMetralleta().getDaño());
-                    boss.getMetralleta().getBalas().remove(i);
-                    break;
-                }
-            }
-        }else if(boss != null && !boss.estaVivo()){
-            pasarNivelPanel();
-        }
         if (!player.estaVivo()) {
             timerMaestro.stop();
+            clip.stop();
             //frame.setVisible(false);
         }
+        generacionBoss();
     }
     public void espada(){
         this.addMouseListener(new MouseAdapter() {
@@ -392,8 +370,6 @@ public class Juego extends JPanel implements  KeyListener {
         }*/
 
         player.pintarMano(bufferGraphics);
-        // terreno.paintArbol(bufferGraphics);
-        // terreno.paintPiedra(bufferGraphics);
 
         // 4. Dibujar el buffer en pantalla
         g.drawImage(buffer, 0, 0, null);
@@ -468,7 +444,7 @@ public class Juego extends JPanel implements  KeyListener {
 
             AudioInputStream audioStream = AudioSystem.getAudioInputStream(archivoAudio);
 
-            Clip clip = AudioSystem.getClip();
+            clip = AudioSystem.getClip();
             clip.open(audioStream);
 
             FloatControl gainControl = (FloatControl) clip.getControl(FloatControl.Type.MASTER_GAIN);
@@ -529,11 +505,37 @@ public class Juego extends JPanel implements  KeyListener {
         
                 btnIrAlMenu.addActionListener(e ->{
                     frame.dispose();
+                    timerMaestro.stop();
+                    int puntos = player.getZombiesEliminados()*10 ;
+                    if (puntos>100) {
+                        ConexionJugador.actualizarJugador(ConexionJugador.nivelJugador + 1,ConexionJugador.puntosJugador +1);
+                    }
                     new Inicio();
                 });
 
         panel.add(btnIrAlMenu);
         add(panel);
         
+    }
+
+    public void generacionBoss(){
+        if (boss != null && boss.estaVivo()) {
+            boss.follow(player);
+            boss.getMetralleta().disparar((int)boss.getX()+500);
+            boss.paint(bufferGraphics);
+            boss.paintBarraVida(bufferGraphics);
+            for(int i =0;i < boss.getMetralleta().getBalas().size();i++){
+                boss.getMetralleta().getBalas().get(i).paintBala(bufferGraphics);
+                if (boss.getMetralleta().acertarDisparo(player.getBounds(),boss.getMetralleta().getBalas().get(i))) {
+                    player.recibirDaño(boss.getMetralleta().getDaño());
+                    boss.getMetralleta().getBalas().remove(i);
+                    break;
+                }
+            }
+        }else if(boss != null && !boss.estaVivo()){
+            pasarNivelPanel();
+            timerMaestro.stop();
+            clip.stop();
+        }
     }
 }

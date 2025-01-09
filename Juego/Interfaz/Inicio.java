@@ -80,7 +80,4 @@ public class Inicio extends JFrame{
         panel.add(btnArmeria);
     }
 
-    /*public static void main(String[] args) {
-        new Inicio();
-    }-*/
 }

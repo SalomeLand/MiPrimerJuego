@@ -22,6 +22,7 @@ public class MejorarMetralleta extends JFrame{
         componentes();
         listener();
         add(panel);
+        setUndecorated(true);
         setLocationRelativeTo(null);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setVisible(true);
